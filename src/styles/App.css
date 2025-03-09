@@ -1,0 +1,74 @@
+#root {
+  display: flex;
+  align-items: flex-start;
+}
+
+.App {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  padding: 20px;
+  box-sizing: border-box;
+}
+
+h1 {
+  text-align: center;
+}
+
+.param-form {
+  display: block;
+}
+
+.right-container {
+  display: inline;
+  justify-content: flex-end;
+  float: right;
+  width: 20%;
+  height: 800px;
+  box-sizing: border-box;
+  padding: 10px;
+  border: 2px solid teal;
+  position: relative;
+}
+
+.left-container {
+  width: 79%;
+  height: 800px;
+  border: 2px solid teal;
+  box-sizing: border-box;
+}
+
+.input-group {
+  display: flex;
+  flex-direction: row; /* Размещаем label и input в строку */
+  align-items: center;
+  margin-bottom: 5%;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.input-group label {
+  margin: 10px 20px 10px 0; /* Расстояние между текстом и инпутом */
+  text-align: left; /* Выравниваем текст по правому краю */
+  width: 100%; /* Ширина label по содержимому */
+}
+
+.input_style {
+  width: 8rem;
+  max-width: 200px; /* Ширина инпута */
+  height: 30px;
+  box-sizing: border-box;
+}
+
+.input_style:last-child {
+  margin-bottom: 0;
+}
+
+.bt-find {
+  width: 80%;
+  height: 30px;
+  position: absolute; /* Position the button absolutely */
+  bottom: 10px; /* Place it at the bottom of the right container */
+  left: 50%; /* Center it horizontally */
+  transform: translateX(-50%); /* Adjust for exact centering */
+}
