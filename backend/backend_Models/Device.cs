@@ -10,7 +10,6 @@ namespace BackendModels
 {
     public sealed class Device
     {
-        [Key]
         public int Id { get; set; }
         [Required]
         public string Name { get; set; }
@@ -23,6 +22,6 @@ namespace BackendModels
         public int Price { get; set; }
         public int VentilationTypeId { get; set; }
         [ForeignKey("VentilationTypeId")]
-        public virtual required VentilationType VentilationType { get; set; }
+        public required VentilationType VentilationType { get; set; }
     }
 }
