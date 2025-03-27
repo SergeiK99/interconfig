@@ -1,7 +1,7 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
 
-namespace backend_Models
+namespace BackendModels
 {
     public class VentilationType
     {

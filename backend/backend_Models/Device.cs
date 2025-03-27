@@ -6,9 +6,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace backend_Models
+namespace BackendModels
 {
-    public class Device
+    public sealed class Device
     {
         [Key]
         public int Id { get; set; }
