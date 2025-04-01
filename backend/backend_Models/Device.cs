@@ -8,6 +8,9 @@ using System.Threading.Tasks;
 
 namespace BackendModels
 {
+    /// <summary>
+    /// Оборудавния вентиляции компании Tion
+    /// </summary>
     public sealed class Device
     {
         public int Id { get; set; }
@@ -15,9 +18,11 @@ namespace BackendModels
         public string Name { get; set; }
         public string Description { get; set; }
         public string Image { get; set; }
-        public string Url { get; set; }
+        public int PowerConsumption { get; set; }
+        public int NoiseLevel { get; set; }
+        //Максимальный расход/поток воздуха
         [Required]
-        public double Performance { get; set; }
+        public int MaxAirflow { get; set; }
         [Range(1, int.MaxValue)]
         public int Price { get; set; }
         public int VentilationTypeId { get; set; }
