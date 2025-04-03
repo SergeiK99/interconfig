@@ -7,6 +7,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "backend", "backend\backend.
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BackendModels", "backend_Models\BackendModels.csproj", "{8419DEFB-FD18-4884-BFB1-A0BB533BA404}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BackendDataAcces", "BackendDataAcces\BackendDataAcces.csproj", "{18CEACFD-E8FD-4FEC-AF17-354C5D433B5B}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -21,6 +23,10 @@ Global
 		{8419DEFB-FD18-4884-BFB1-A0BB533BA404}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{8419DEFB-FD18-4884-BFB1-A0BB533BA404}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{8419DEFB-FD18-4884-BFB1-A0BB533BA404}.Release|Any CPU.Build.0 = Release|Any CPU
+		{18CEACFD-E8FD-4FEC-AF17-354C5D433B5B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{18CEACFD-E8FD-4FEC-AF17-354C5D433B5B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{18CEACFD-E8FD-4FEC-AF17-354C5D433B5B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{18CEACFD-E8FD-4FEC-AF17-354C5D433B5B}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
