@@ -3,16 +3,10 @@ using Microsoft.EntityFrameworkCore;
 
 namespace BackendDataAccess.Repositories
 {
-    public class Repository<T> : IRepository<T> where T : class
+    public class Repository<T>(ApplicationDbContext context) : IRepository<T> where T : class
     {
-        protected readonly ApplicationDbContext _context;
-        private readonly DbSet<T> _dbSet;
-
-        public Repository(ApplicationDbContext context)
-        {
-            _context = context;
-            _dbSet = context.Set<T>();
-        }
+        protected readonly ApplicationDbContext _context = context;
+        private readonly DbSet<T> _dbSet = context.Set<T>();
 
         public async Task AddAsync(T entity)
         {
@@ -30,12 +24,12 @@ namespace BackendDataAccess.Repositories
             }
         }
 
-        public async Task<IEnumerable<T>> GetAllAsync()
+        public virtual async Task<IEnumerable<T>> GetAllAsync()
         {
             return await _dbSet.ToListAsync();
         }
 
-        public async Task<T> GetByIdAsync(int id)
+        public virtual async Task<T?> GetByIdAsync(int id)
         {
             //TODO: Добавить AsNoTracking
             return await _dbSet.FindAsync(id);

@@ -1,4 +1,4 @@
-﻿using BackendDataAccess.Repository.IRepository;
+﻿using BackendDataAccess.Repositories.IRepositories;
 using BackendModels;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -7,14 +7,9 @@ namespace backend.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class DevicesController : ControllerBase
+    public class DevicesController(IDeviceRepository deviceRepo) : ControllerBase
     {
-        private readonly IDeviceRepository _deviceRepo;
-
-        public DevicesController(IDeviceRepository deviceRepo)
-        {
-            _deviceRepo = deviceRepo;
-        }
+        private readonly IDeviceRepository _deviceRepo = deviceRepo;
 
         [HttpGet]
         public async Task<IActionResult> GetAll()
