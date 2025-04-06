@@ -12,7 +12,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\BackendDataAcces\BackendDataAcces.csproj" />
+    <ProjectReference Include="..\BackendDataAcces\BackendDataAccess.csproj" />
     <ProjectReference Include="..\backend_Models\BackendModels.csproj" />
   </ItemGroup>
 
