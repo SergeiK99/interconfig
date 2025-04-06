@@ -1,12 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using BackendDataAccess.Repositories.IRepositories;
+using BackendModels;
 
 namespace BackendDataAccess.Repositories
 {
-    internal class VentilationTypeRepository
+    public class VentilationTypeRepository(ApplicationDbContext context) : Repository<VentilationType>(context), IVentilationTypeRepository
     {
     }
 }
