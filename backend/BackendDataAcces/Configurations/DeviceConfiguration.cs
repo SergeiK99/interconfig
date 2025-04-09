@@ -9,7 +9,10 @@ namespace BackendDataAccess.Configurations
         public void Configure(EntityTypeBuilder<Device> builder)
         {
             builder.HasKey(x => x.Id);
-            builder.HasOne(x => x.VentilationType);
+            builder
+                .HasOne(x => x.VentilationType)
+                .WithMany()
+                .HasForeignKey(x => x.VentilationTypeId);
         }
     }
 }

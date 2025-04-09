@@ -4,10 +4,10 @@
 }
 
 .App {
-  display: flex;
   flex-direction: column;
   width: 100%;
   padding: 20px;
+  margin-top: 60px;
   box-sizing: border-box;
 }
 
@@ -72,3 +72,53 @@ h1 {
   left: 50%; /* Center it horizontally */
   transform: translateX(-50%); /* Adjust for exact centering */
 }
+
+/* Навигация */
+.app-header {
+  background-color: #282c34; /* Цвет фона хедера */
+  padding: 10px 20px; /* Отступы в хедере */
+  width: 100%; /* Хедер занимает 100% ширины страницы */
+  position: fixed; /* Фиксируем хедер */
+  top: 0; /* Прикрепляем к верхней части страницы */
+  z-index: 1000; /* Обеспечиваем, что хедер будет поверх других элементов */
+}
+
+.navbar {
+  display: flex; /* Используем Flexbox для выравнивания элементов */
+  justify-content: space-between; /* Распределяем элементы по всей ширине */
+  align-items: center; /* Центрируем элементы по вертикали */
+}
+
+.nav-links {
+  list-style-type: none; /* Убираем маркеры списка */
+  padding: 0; /* Убираем отступы */
+  margin: 0; /* Убираем поля */
+  display: flex; /* Используем Flexbox для навигационных ссылок */
+}
+
+.nav-links li {
+  margin-right: 20px; /* Отступ между пунктами меню */
+}
+
+.nav-links a {
+  color: white; /* Цвет текста ссылок */
+  text-decoration: none; /* Убираем подчеркивание */
+  font-weight: bold; /* Делаем текст жирным */
+}
+
+.nav-links a:hover {
+  text-decoration: underline; /* Подчеркивание при наведении */
+}
+
+.app-content {
+  padding: 20px; /* Отступы для содержимого приложения */
+  margin-top: 60px; /* Отступ сверху, чтобы контент не накладывался на хедер */
+  
+  /* Центрируем содержимое */
+  display: flex; 
+  justify-content: center; 
+  align-items: center; 
+  flex-direction: column; /* Выравниваем по вертикали, если нужны несколько элементов */
+  min-height: calc(100vh - 60px); /* Обеспечиваем минимальную высоту для центрирования */
+}
+/* Навигация */
