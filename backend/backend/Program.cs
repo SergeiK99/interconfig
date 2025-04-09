@@ -1,6 +1,6 @@
-using BackendDataAccess;
-using BackendDataAccess.Repository;
-using BackendDataAccess.Repository.IRepository;
+﻿using BackendDataAccess;
+using BackendDataAccess.Repositories;
+using BackendDataAccess.Repositories.IRepositories;
 using Microsoft.EntityFrameworkCore;
 
 namespace backend
@@ -19,12 +19,13 @@ namespace backend
             builder.Services.AddSwaggerGen();
 
             builder.Services.AddScoped<IDeviceRepository, DeviceRepository>();
+            builder.Services.AddScoped<IVentilationTypeRepository, VentilationTypeRepository>();
             builder.Services.AddControllers();
 
             builder.Services.AddDbContext<ApplicationDbContext>(
                 options =>
                 {
-                    options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConection"));
+                    options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection"));
                 });
 
             var app = builder.Build();

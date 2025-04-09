@@ -10,7 +10,6 @@ namespace BackendDataAccess.Configurations
         public void Configure(EntityTypeBuilder<VentilationType> builder)
         {
             builder.HasKey(x => x.Id);
-            builder.HasMany(x = )
         }
     }
 }
