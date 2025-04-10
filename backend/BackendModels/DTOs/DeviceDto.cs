@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 
 namespace BackendModels.DTOs
 {
+    //DTO сущности Device для корректного создания
     public class DeviceDto
     {
         public int Id { get; set; }

@@ -1,6 +1,7 @@
 ﻿using BackendDataAccess.Repositories;
 using BackendDataAccess.Repositories.IRepositories;
 using BackendModels;
+using BackendModels.DTOs;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
@@ -27,8 +28,33 @@ namespace backend.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> Create([FromBody] Device device)
+        public async Task<IActionResult> Create([FromBody] DeviceDto deviceDto)
         {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+
+            var ventilationType = await _deviceRepo.GetVentilationTypeByIdAsync(deviceDto.VentilationTypeId);
+            if (ventilationType == null)
+            {
+                return BadRequest("Указанный тип вентиляции не найден.");
+            }
+
+            var device = new Device
+            {
+                Name = deviceDto.Name,
+                Description = deviceDto.Description,
+                Image = deviceDto.Image,
+                PowerConsumption = deviceDto.PowerConsumption,
+                NoiseLevel = deviceDto.NoiseLevel,
+                MaxAirflow = deviceDto.MaxAirflow,
+                Price = deviceDto.Price,
+                VentilationTypeId = deviceDto.VentilationTypeId,
+                VentilationType = ventilationType
+
+            };
+
             await _deviceRepo.AddAsync(device);
             return CreatedAtAction(nameof(GetById), new { id = device.Id }, device);
         }

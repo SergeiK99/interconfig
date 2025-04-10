@@ -15,5 +15,10 @@ namespace BackendDataAccess.Repositories
         {
             return await _context.Devices.Include(d => d.VentilationType).FirstOrDefaultAsync(d => d.Id == id);
         }
+
+        public async Task<VentilationType?> GetVentilationTypeByIdAsync(int id)
+        {
+            return await _context.VentilationTypes.FindAsync(id);
+        }
     }
 }
