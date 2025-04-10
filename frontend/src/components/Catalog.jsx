@@ -1,19 +1,32 @@
 import React, { useEffect, useState } from 'react';
+import './Catalog.css';
+import CreateDeviceForm from './CreateDeviceForm';
+import DeviceCard from './DeviceCard';
 
 const Catalog = () => {
     const [devices, setDevices] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
+    const [showCreateForm, setShowCreateForm] = useState(false);
+    const [ventilationTypes, setVentilationTypes] = useState([]);
 
     useEffect(() => {
-        const fetchDevices = async () => {
+        const fetchData = async () => {
             try {
-                const response = await fetch('http://localhost:5115/api/Devices'); // Путь к вашему API
-                if (!response.ok) {
+                const [devicesResponse, typesResponse] = await Promise.all([
+                    fetch('http://localhost:5115/api/Devices'),
+                    fetch('http://localhost:5115/api/VentilationTypes')
+                ]);
+                
+                if (!devicesResponse.ok || !typesResponse.ok) {
                     throw new Error('Ошибка загрузки данных');
                 }
-                const data = await response.json();
-                setDevices(data);
+                
+                const devicesData = await devicesResponse.json();
+                const typesData = await typesResponse.json();
+                
+                setDevices(devicesData);
+                setVentilationTypes(typesData);
             } catch (err) {
                 setError(err.message);
             } finally {
@@ -21,8 +34,12 @@ const Catalog = () => {
             }
         };
 
-        fetchDevices();
+        fetchData();
     }, []);
+
+    const handleDeviceCreated = (newDevice) => {
+        setDevices([...devices, newDevice]);
+    };
 
     if (loading) {
         return <div>Загрузка...</div>;
@@ -34,21 +51,29 @@ const Catalog = () => {
 
     return (
         <div className="device-list-container">
-            <h1>Список устройств</h1>
-            <ul>
+            <div className="header-section">
+                <h1>Каталог</h1>
+                <button 
+                    className="create-button blue-button"
+                    onClick={() => setShowCreateForm(true)}
+                >
+                    Создать устройство
+                </button>
+            </div>
+
+            {showCreateForm && (
+                <CreateDeviceForm 
+                    ventilationTypes={ventilationTypes}
+                    onClose={() => setShowCreateForm(false)}
+                    onDeviceCreated={handleDeviceCreated}
+                />
+            )}
+
+            <div className="devices-grid">
                 {devices.map((device) => (
-                    <li key={device.id} className="device-item">
-                        <h2>{device.name}</h2>
-                        <img src={device.image} alt={device.name} className="device-image" />
-                        <p>{device.description}</p>
-                        <p>Потребление энергии: {device.powerConsumption} Вт</p>
-                        <p>Уровень шума: {device.noiseLevel} дБ</p>
-                        <p>Максимальный воздушный поток: {device.maxAirflow} м³/ч</p>
-                        <p>Цена: {device.price} ₽</p>
-                        <p>Тип вентиляции: {device.ventilationType?.name}</p>
-                    </li>
+                    <DeviceCard key={device.id} device={device} />
                 ))}
-            </ul>
+            </div>
         </div>
     );
 };

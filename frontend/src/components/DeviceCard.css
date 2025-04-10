@@ -1,0 +1,37 @@
+.device-card {
+    background-color: white;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    overflow: hidden;
+    transition: transform 0.3s, box-shadow 0.3s;
+}
+
+.device-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+}
+
+.device-card h2 {
+    padding: 15px;
+    margin: 0;
+    background-color: #2196F3;
+    color: white;
+    border-bottom: 1px solid #1976D2;
+    font-size: 18px;
+}
+
+.device-image {
+    width: 100%;
+    height: 200px;
+    object-fit: cover;
+}
+
+.device-details {
+    padding: 15px;
+}
+
+.device-details p {
+    margin: 8px 0;
+    font-size: 14px;
+    color: #555;
+} 
