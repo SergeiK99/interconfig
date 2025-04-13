@@ -1,7 +1,8 @@
-﻿using BackendDataAccess.Repositories;
+﻿using backend.DTOs;
+using backend.Services;
+using BackendDataAccess.Repositories;
 using BackendDataAccess.Repositories.IRepositories;
 using BackendModels;
-using BackendModels.DTOs;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using static System.Net.Mime.MediaTypeNames;
@@ -10,9 +11,10 @@ namespace backend.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class DevicesController(IDeviceRepository deviceRepo) : ControllerBase
+    public class DevicesController(IDeviceRepository deviceRepo, AddDeviceService addDeviceService) : ControllerBase
     {
         private readonly IDeviceRepository _deviceRepo = deviceRepo;
+        private readonly AddDeviceService _addDeviceService = addDeviceService;
 
         [HttpGet]
         public async Task<IActionResult> GetAll()
@@ -36,36 +38,15 @@ namespace backend.Controllers
                 return BadRequest(ModelState);
             }
 
-            var ventilationType = await _deviceRepo.GetVentilationTypeByIdAsync(deviceDto.VentilationTypeId);
-            if (ventilationType == null)
+            try
             {
-                return BadRequest("Указанный тип вентиляции не найден.");
+                var device = await _addDeviceService.AddDeviceAsync(deviceDto);
+                return CreatedAtAction(nameof(GetById), new { id = device.Id }, device);
             }
-
-            var device = new Device
+            catch (ArgumentException ex)
             {
-                Name = deviceDto.Name,
-                Description = deviceDto.Description,
-                PowerConsumption = deviceDto.PowerConsumption,
-                NoiseLevel = deviceDto.NoiseLevel,
-                MaxAirflow = deviceDto.MaxAirflow,
-                Price = deviceDto.Price,
-                VentilationTypeId = deviceDto.VentilationTypeId,
-                VentilationType = ventilationType
-
-            };
-
-            if (deviceDto.Image != null && deviceDto.Image.Length > 0)
-            {
-                using (var memoryStream = new MemoryStream())
-                {
-                    await deviceDto.Image.CopyToAsync(memoryStream);
-                    device.Image = Convert.ToBase64String(memoryStream.ToArray());
-                }
+                return BadRequest(ex.Message);
             }
-
-            await _deviceRepo.AddAsync(device);
-            return CreatedAtAction(nameof(GetById), new { id = device.Id }, device);
         }
     }
 }

@@ -1,4 +1,5 @@
-﻿using BackendDataAccess;
+﻿using backend.Services;
+using BackendDataAccess;
 using BackendDataAccess.Repositories;
 using BackendDataAccess.Repositories.IRepositories;
 using Microsoft.EntityFrameworkCore;
@@ -19,6 +20,7 @@ namespace backend
             builder.Services.AddSwaggerGen();
 
             builder.Services.AddScoped<IDeviceRepository, DeviceRepository>();
+            builder.Services.AddScoped<AddDeviceService>();
             builder.Services.AddScoped<IVentilationTypeRepository, VentilationTypeRepository>();
             builder.Services.AddControllers();
 
