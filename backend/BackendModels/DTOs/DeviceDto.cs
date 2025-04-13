@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Microsoft.AspNetCore.Http;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
@@ -17,7 +18,7 @@ namespace BackendModels.DTOs
 
         public string Description { get; set; }
 
-        public string Image { get; set; }
+        public IFormFile Image { get; set; }
 
         public int PowerConsumption { get; set; }
 

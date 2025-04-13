@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import './Catalog.css';
 import CreateDeviceForm from './CreateDeviceForm';
 import DeviceCard from './DeviceCard';
+import LoadingSpinner from './LoadingSpinner';
 
 const Catalog = () => {
     const [devices, setDevices] = useState([]);
@@ -42,11 +43,23 @@ const Catalog = () => {
     };
 
     if (loading) {
-        return <div>Загрузка...</div>;
+        return <LoadingSpinner message="Загрузка каталога устройств..." />;
     }
 
     if (error) {
-        return <div>Ошибка: {error}</div>;
+        return (
+            <div className="error-container">
+                <div className="error-icon">⚠️</div>
+                <h2>Произошла ошибка</h2>
+                <p>{error}</p>
+                <button 
+                    className="retry-button blue-button"
+                    onClick={() => window.location.reload()}
+                >
+                    Попробовать снова
+                </button>
+            </div>
+        );
     }
 
     return (

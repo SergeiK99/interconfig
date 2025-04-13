@@ -4,6 +4,7 @@ using BackendModels;
 using BackendModels.DTOs;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using static System.Net.Mime.MediaTypeNames;
 
 namespace backend.Controllers
 {
@@ -45,7 +46,6 @@ namespace backend.Controllers
             {
                 Name = deviceDto.Name,
                 Description = deviceDto.Description,
-                Image = deviceDto.Image,
                 PowerConsumption = deviceDto.PowerConsumption,
                 NoiseLevel = deviceDto.NoiseLevel,
                 MaxAirflow = deviceDto.MaxAirflow,
@@ -54,6 +54,15 @@ namespace backend.Controllers
                 VentilationType = ventilationType
 
             };
+
+            if (deviceDto.Image != null && deviceDto.Image.Length > 0)
+            {
+                using (var memoryStream = new MemoryStream())
+                {
+                    await deviceDto.Image.CopyToAsync(memoryStream);
+                    device.Image = Convert.ToBase64String(memoryStream.ToArray());
+                }
+            }
 
             await _deviceRepo.AddAsync(device);
             return CreatedAtAction(nameof(GetById), new { id = device.Id }, device);
