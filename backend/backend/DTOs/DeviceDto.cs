@@ -18,7 +18,7 @@ namespace backend.DTOs
 
         public string Description { get; set; }
 
-        public string Image { get; set; }
+        public string? ImagePath { get; set; }
 
         public int PowerConsumption { get; set; }
 

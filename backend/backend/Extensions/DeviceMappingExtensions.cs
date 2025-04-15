@@ -11,7 +11,7 @@ namespace backend.Extensions
             {
                 Name = deviceDto.Name,
                 Description = deviceDto.Description,
-                Image = deviceDto.Image,
+                ImagePath = deviceDto.ImagePath,
                 PowerConsumption = deviceDto.PowerConsumption,
                 NoiseLevel = deviceDto.NoiseLevel,
                 MaxAirflow = deviceDto.MaxAirflow,

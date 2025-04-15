@@ -17,7 +17,7 @@ namespace BackendModels
         [Required]
         public string Name { get; set; }
         public string Description { get; set; }
-        public string Image { get; set; }
+        public string ImagePath { get; set; }
         public int PowerConsumption { get; set; }
         public int NoiseLevel { get; set; }
         //Максимальный расход/поток воздуха

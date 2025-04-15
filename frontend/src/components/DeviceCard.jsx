@@ -2,10 +2,12 @@ import React from 'react';
 import './DeviceCard.css';
 
 const DeviceCard = ({ device }) => {
+    const imageUrl = device.imagePath ? `http://localhost:5115${device.imagePath}` : '/placeholder-device.png';
+
     return (
         <div className="device-card">
             <h2>{device.name}</h2>
-            <img src={device.image} alt={device.name} className="device-image" />
+            <img src={imageUrl} alt={device.name} className="device-image" />
             <div className="device-details">
                 <p>{device.description}</p>
                 <p>Потребление энергии: {device.powerConsumption} Вт</p>
