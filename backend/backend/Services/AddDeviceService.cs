@@ -3,19 +3,18 @@ using BackendDataAccess.Repositories.IRepositories;
 using BackendModels;
 using backend.Extensions;
 using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Hosting;
 
 namespace backend.Services
 {
     public class AddDeviceService
     {
         private readonly IDeviceRepository _deviceRepository;
-        private readonly IWebHostEnvironment _environment;
+        private readonly ImageService _imageService;
 
-        public AddDeviceService(IDeviceRepository deviceRepository, IWebHostEnvironment environment)
+        public AddDeviceService(IDeviceRepository deviceRepository, ImageService imageService)
         {
             _deviceRepository = deviceRepository;
-            _environment = environment;
+            _imageService = imageService;
         }
 
         public async Task<Device> AddDeviceAsync(DeviceDto deviceDto, IFormFile imageFile)
@@ -26,27 +25,11 @@ namespace backend.Services
                 throw new ArgumentException("Указанный тип вентиляции не найден.");
             }
 
-            string imagePath = null;
             if (imageFile != null && imageFile.Length > 0)
             {
-                var uploadsFolder = Path.Combine(_environment.WebRootPath ?? "wwwroot", "uploads", "devices");
-                if (!Directory.Exists(uploadsFolder))
-                {
-                    Directory.CreateDirectory(uploadsFolder);
-                }
-
-                var uniqueFileName = $"{Guid.NewGuid()}_{imageFile.FileName}";
-                var filePath = Path.Combine(uploadsFolder, uniqueFileName);
-
-                using (var fileStream = new FileStream(filePath, FileMode.Create))
-                {
-                    await imageFile.CopyToAsync(fileStream);
-                }
-
-                imagePath = $"/uploads/devices/{uniqueFileName}";
+                deviceDto.ImagePath = await _imageService.SaveImageAsync(imageFile, "devices");
             }
 
-            deviceDto.ImagePath = imagePath;
             var device = deviceDto.MapToModel(ventilationType);
             await _deviceRepository.AddAsync(device);
             return device;

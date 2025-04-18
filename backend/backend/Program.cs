@@ -41,6 +41,8 @@ namespace backend
 
             builder.Services.AddScoped<IDeviceRepository, DeviceRepository>();
             builder.Services.AddScoped<AddDeviceService>();
+            builder.Services.AddScoped<UpdateDeviceService>();
+            builder.Services.AddScoped<ImageService>();
             builder.Services.AddScoped<IVentilationTypeRepository, VentilationTypeRepository>();
 
             builder.Services.AddDbContext<ApplicationDbContext>(

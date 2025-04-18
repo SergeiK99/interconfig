@@ -1,29 +1,29 @@
 import React, { useState, useRef } from 'react';
 import './CreateDeviceForm.css';
-import { createDevice } from '../services/Devices';
+import { updateDevice, deleteDevice } from '../services/Devices';
 
-const CreateDeviceForm = ({ ventilationTypes, onClose, onDeviceCreated }) => {
-    const [newDevice, setNewDevice] = useState({
-        name: '',
-        description: '',
-        powerConsumption: '',
-        noiseLevel: '',
-        maxAirflow: '',
-        price: '',
-        ventilationTypeId: ''
+const EditDeviceForm = ({ device, ventilationTypes, onClose, onDeviceUpdated, onDeviceDeleted }) => {
+    const [editedDevice, setEditedDevice] = useState({
+        name: device.name,
+        description: device.description,
+        powerConsumption: device.powerConsumption,
+        noiseLevel: device.noiseLevel,
+        maxAirflow: device.maxAirflow,
+        price: device.price,
+        ventilationTypeId: device.ventilationTypeId
     });
-    const [imagePreview, setImagePreview] = useState(null);
+    const [imagePreview, setImagePreview] = useState(device.imagePath ? `http://localhost:5115${device.imagePath}` : null);
     const [selectedImage, setSelectedImage] = useState(null);
     const fileInputRef = useRef(null);
 
-    const handleCreateDevice = async (e) => {
+    const handleUpdateDevice = async (e) => {
         e.preventDefault();
         
         // Валидация числовых полей
-        if (newDevice.powerConsumption < 0 || 
-            newDevice.noiseLevel < 0 || 
-            newDevice.maxAirflow < 0 || 
-            newDevice.price < 0) {
+        if (editedDevice.powerConsumption < 0 || 
+            editedDevice.noiseLevel < 0 || 
+            editedDevice.maxAirflow < 0 || 
+            editedDevice.price < 0) {
             alert('Числовые значения не могут быть отрицательными');
             return;
         }
@@ -32,8 +32,8 @@ const CreateDeviceForm = ({ ventilationTypes, onClose, onDeviceCreated }) => {
             const formData = new FormData();
             
             // Добавляем все поля устройства в FormData
-            Object.keys(newDevice).forEach(key => {
-                formData.append(key, newDevice[key]);
+            Object.keys(editedDevice).forEach(key => {
+                formData.append(key, editedDevice[key]);
             });
             
             // Добавляем изображение, если оно было выбрано
@@ -41,23 +41,36 @@ const CreateDeviceForm = ({ ventilationTypes, onClose, onDeviceCreated }) => {
                 formData.append('image', selectedImage);
             }
 
-            const createdDevice = await createDevice(formData);
+            const updatedDevice = await updateDevice(device.id, formData);
             
-            if (createdDevice) {
-                onDeviceCreated(createdDevice);
+            if (updatedDevice) {
+                onDeviceUpdated(updatedDevice);
                 onClose();
             } else {
-                throw new Error('Ошибка при создании устройства');
+                throw new Error('Ошибка при обновлении устройства');
             }
         } catch (err) {
-            console.error('Ошибка при создании устройства:', err);
-            alert('Ошибка при создании устройства: ' + err.message);
+            console.error('Ошибка при обновлении устройства:', err);
+            alert('Ошибка при обновлении устройства: ' + err.message);
+        }
+    };
+
+    const handleDeleteDevice = async () => {
+        if (window.confirm('Вы уверены, что хотите удалить это устройство?')) {
+            try {
+                await deleteDevice(device.id);
+                onDeviceDeleted(device.id);
+                onClose();
+            } catch (err) {
+                console.error('Ошибка при удалении устройства:', err);
+                alert('Ошибка при удалении устройства: ' + err.message);
+            }
         }
     };
 
     const handleInputChange = (e) => {
         const { name, value } = e.target;
-        setNewDevice(prev => ({
+        setEditedDevice(prev => ({
             ...prev,
             [name]: value
         }));
@@ -80,14 +93,14 @@ const CreateDeviceForm = ({ ventilationTypes, onClose, onDeviceCreated }) => {
     return (
         <div className="create-form-overlay">
             <div className="create-form">
-                <h2>Создание нового устройства</h2>
-                <form onSubmit={handleCreateDevice}>
+                <h2>Редактирование устройства</h2>
+                <form onSubmit={handleUpdateDevice}>
                     <div className="form-group">
                         <label>Название:</label>
                         <input
                             type="text"
                             name="name"
-                            value={newDevice.name}
+                            value={editedDevice.name}
                             onChange={handleInputChange}
                             required
                         />
@@ -96,7 +109,7 @@ const CreateDeviceForm = ({ ventilationTypes, onClose, onDeviceCreated }) => {
                         <label>Описание:</label>
                         <textarea
                             name="description"
-                            value={newDevice.description}
+                            value={editedDevice.description}
                             onChange={handleInputChange}
                             required
                         />
@@ -105,7 +118,7 @@ const CreateDeviceForm = ({ ventilationTypes, onClose, onDeviceCreated }) => {
                         <label>Тип вентиляции:</label>
                         <select
                             name="ventilationTypeId"
-                            value={newDevice.ventilationTypeId}
+                            value={editedDevice.ventilationTypeId}
                             onChange={handleInputChange}
                             required
                         >
@@ -120,7 +133,7 @@ const CreateDeviceForm = ({ ventilationTypes, onClose, onDeviceCreated }) => {
                         <input
                             type="number"
                             name="powerConsumption"
-                            value={newDevice.powerConsumption}
+                            value={editedDevice.powerConsumption}
                             onChange={handleInputChange}
                             min="0"
                             required
@@ -131,7 +144,7 @@ const CreateDeviceForm = ({ ventilationTypes, onClose, onDeviceCreated }) => {
                         <input
                             type="number"
                             name="noiseLevel"
-                            value={newDevice.noiseLevel}
+                            value={editedDevice.noiseLevel}
                             onChange={handleInputChange}
                             min="0"
                             required
@@ -142,7 +155,7 @@ const CreateDeviceForm = ({ ventilationTypes, onClose, onDeviceCreated }) => {
                         <input
                             type="number"
                             name="maxAirflow"
-                            value={newDevice.maxAirflow}
+                            value={editedDevice.maxAirflow}
                             onChange={handleInputChange}
                             min="0"
                             required
@@ -153,7 +166,7 @@ const CreateDeviceForm = ({ ventilationTypes, onClose, onDeviceCreated }) => {
                         <input
                             type="number"
                             name="price"
-                            value={newDevice.price}
+                            value={editedDevice.price}
                             onChange={handleInputChange}
                             min="0"
                             required
@@ -168,7 +181,6 @@ const CreateDeviceForm = ({ ventilationTypes, onClose, onDeviceCreated }) => {
                                 onChange={handleImageChange}
                                 accept="image/*"
                                 style={{ display: 'none' }}
-                                required
                             />
                             <button 
                                 type="button" 
@@ -176,7 +188,7 @@ const CreateDeviceForm = ({ ventilationTypes, onClose, onDeviceCreated }) => {
                                 onClick={triggerFileInput}
                             >
                                 <span className="upload-icon">📷</span>
-                                <span>Выбрать изображение</span>
+                                <span>Изменить изображение</span>
                             </button>
                             {imagePreview && (
                                 <div className="image-preview">
@@ -186,7 +198,14 @@ const CreateDeviceForm = ({ ventilationTypes, onClose, onDeviceCreated }) => {
                         </div>
                     </div>
                     <div className="form-buttons">
-                        <button type="submit" className="form-button green-button">Создать</button>
+                        <button type="submit" className="form-button green-button">Сохранить</button>
+                        <button 
+                            type="button" 
+                            className="form-button cancel-button"
+                            onClick={handleDeleteDevice}
+                        >
+                            Удалить
+                        </button>
                         <button 
                             type="button" 
                             className="form-button cancel-button"
@@ -201,4 +220,4 @@ const CreateDeviceForm = ({ ventilationTypes, onClose, onDeviceCreated }) => {
     );
 };
 
-export default CreateDeviceForm; 
+export default EditDeviceForm; 
