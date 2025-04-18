@@ -5,6 +5,9 @@ using BackendDataAccess.Repositories.IRepositories;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Http.Features;
 using Microsoft.AspNetCore.Server.Kestrel.Core;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.IdentityModel.Tokens;
+using System.Text;
 
 namespace backend
 {
@@ -20,6 +23,22 @@ namespace backend
             // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
             builder.Services.AddEndpointsApiExplorer();
             builder.Services.AddSwaggerGen();
+
+            // Configure JWT Authentication
+            builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+                .AddJwtBearer(options =>
+                {
+                    options.TokenValidationParameters = new TokenValidationParameters
+                    {
+                        ValidateIssuer = true,
+                        ValidateAudience = true,
+                        ValidateLifetime = true,
+                        ValidateIssuerSigningKey = true,
+                        ValidIssuer = builder.Configuration["Jwt:Issuer"],
+                        ValidAudience = builder.Configuration["Jwt:Audience"],
+                        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration["Jwt:Key"]))
+                    };
+                });
 
             // Configure file upload settings
             builder.Services.Configure<IISServerOptions>(options =>
@@ -44,6 +63,7 @@ namespace backend
             builder.Services.AddScoped<UpdateDeviceService>();
             builder.Services.AddScoped<ImageService>();
             builder.Services.AddScoped<IVentilationTypeRepository, VentilationTypeRepository>();
+            builder.Services.AddScoped<IAuthService, AuthService>();
 
             builder.Services.AddDbContext<ApplicationDbContext>(
                 options =>
@@ -80,6 +100,7 @@ namespace backend
             // Configure CORS middleware
             app.UseCors();
 
+            app.UseAuthentication();
             app.UseAuthorization();
 
             app.MapControllers();
