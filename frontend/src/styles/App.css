@@ -7,8 +7,16 @@
   flex-direction: column;
   width: 100%;
   padding: 20px;
-  margin-top: 60px;
+  margin-top: 80px; /* Увеличиваем отступ сверху, чтобы контент не приклеивался к навигации */
   box-sizing: border-box;
+  max-width: 1200px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+/* Специальные стили для страницы каталога */
+.catalog-page {
+  margin-top: -20px; /* Компенсируем отступ App для каталога */
 }
 
 h1 {
@@ -135,15 +143,74 @@ h1 {
   width: 100%;
 }
 
+.auth-buttons {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+}
+
+.auth-button {
+  background: none;
+  border: none;
+  color: #333;
+  font-weight: 500;
+  font-size: 16px;
+  cursor: pointer;
+  padding: 8px 0;
+  position: relative;
+  transition: color 0.3s ease;
+}
+
+.auth-button:hover {
+  color: #2196F3;
+}
+
+.auth-button:after {
+  content: '';
+  position: absolute;
+  width: 0;
+  height: 2px;
+  bottom: 0;
+  left: 0;
+  background-color: #2196F3;
+  transition: width 0.3s ease;
+}
+
+.auth-button:hover:after {
+  width: 100%;
+}
+
+.user-email {
+  color: #666;
+  font-size: 0.9rem;
+  margin-right: 15px;
+}
+
+.logout-button {
+  background: none;
+  border: 1px solid #dc3545;
+  color: #dc3545;
+  padding: 0.5rem 1rem;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 0.9rem;
+  transition: all 0.2s;
+}
+
+.logout-button:hover {
+  background-color: #dc3545;
+  color: white;
+}
+
 .app-content {
   padding: 20px; /* Отступы для содержимого приложения */
-  margin-top: 60px; /* Отступ сверху, чтобы контент не накладывался на хедер */
+  margin-top: 80px; /* Отступ сверху, чтобы контент не накладывался на хедер */
   
   /* Центрируем содержимое */
   display: flex; 
   justify-content: center; 
   align-items: center;
   flex-direction: column; /* Выравниваем по вертикали, если нужны несколько элементов */
-  min-height: calc(100vh - 60px); /* Обеспечиваем минимальную высоту для центрирования */
+  min-height: calc(100vh - 80px); /* Обеспечиваем минимальную высоту для центрирования */
 }
 /* Навигация */

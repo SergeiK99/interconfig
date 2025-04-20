@@ -5,6 +5,7 @@ import DeviceCard from './DeviceCard';
 import LoadingSpinner from './LoadingSpinner';
 import { fetchDevises } from '../services/Devices';
 import { fetchVentilationTypes } from '../services/VentilationTypes';
+import { useAuth } from '../context/AuthContext';
 
 const Catalog = () => {
     const [devices, setDevices] = useState([]);
@@ -12,6 +13,8 @@ const Catalog = () => {
     const [error, setError] = useState(null);
     const [showCreateForm, setShowCreateForm] = useState(false);
     const [ventilationTypes, setVentilationTypes] = useState([]);
+    const { user } = useAuth();
+    const isAdmin = user && user.role === 'Admin';
 
     useEffect(() => {
         const fetchData = async () => {
@@ -75,12 +78,14 @@ const Catalog = () => {
         <div className="device-list-container">
             <div className="header-section">
                 <h1>Каталог</h1>
-                <button 
-                    className="create-button blue-button"
-                    onClick={() => setShowCreateForm(true)}
-                >
-                    Создать устройство
-                </button>
+                {isAdmin && (
+                    <button 
+                        className="create-button blue-button"
+                        onClick={() => setShowCreateForm(true)}
+                    >
+                        Создать устройство
+                    </button>
+                )}
             </div>
 
             {showCreateForm && (
@@ -99,6 +104,7 @@ const Catalog = () => {
                         ventilationTypes={ventilationTypes}
                         onDeviceUpdated={handleDeviceUpdated}
                         onDeviceDeleted={handleDeviceDeleted}
+                        isAdmin={isAdmin}
                     />
                 ))}
             </div>

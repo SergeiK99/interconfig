@@ -1,27 +1,24 @@
 import React from 'react';
-import { BrowserRouter as Router, Route, Routes, Link } from 'react-router-dom';
+import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
 import './styles/App.css';
 import Configurator from './components/Configurator';
 import Catalog from './components/Catalog';
+import Navigation from './components/Navigation';
+import { AuthProvider } from './context/AuthContext';
 
 function App() {
   return (
-    <Router>
-      <header className="app-header">
-        <nav className="navbar">
-          <ul className="nav-links">
-            <li><Link to="/">Конфигуратор</Link></li>
-            <li><Link to="/catalog">Каталог устройств</Link></li>
-          </ul>
-        </nav>
-      </header>
-      <div className="App">
-        <Routes>
-          <Route path="/" element={<Configurator />} />
-          <Route path="/catalog" element={<Catalog />} />
-        </Routes>
-      </div>
-    </Router>
+    <AuthProvider>
+      <Router>
+        <Navigation />
+        <div className="App">
+          <Routes>
+            <Route path="/" element={<Configurator />} />
+            <Route path="/catalog" element={<div className="catalog-page"><Catalog /></div>} />
+          </Routes>
+        </div>
+      </Router>
+    </AuthProvider>
   );
 }
 

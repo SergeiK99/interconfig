@@ -2,17 +2,19 @@ import React, { useState } from 'react';
 import './DeviceCard.css';
 import EditDeviceForm from './EditDeviceForm';
 
-const DeviceCard = ({ device, ventilationTypes, onDeviceUpdated, onDeviceDeleted }) => {
+const DeviceCard = ({ device, ventilationTypes, onDeviceUpdated, onDeviceDeleted, isAdmin }) => {
     const [showEditForm, setShowEditForm] = useState(false);
     const imageUrl = device.imagePath ? `http://localhost:5115${device.imagePath}` : '/placeholder-device.png';
 
     const handleCardClick = () => {
-        setShowEditForm(true);
+        if (isAdmin) {
+            setShowEditForm(true);
+        }
     };
 
     return (
         <>
-            <div className="device-card" onClick={handleCardClick}>
+            <div className={`device-card ${isAdmin ? 'admin-card' : ''}`} onClick={handleCardClick}>
                 <h2>{device.name}</h2>
                 <div className="device-image-container">
                     <img src={imageUrl} alt={device.name} className="device-image" />
@@ -25,6 +27,19 @@ const DeviceCard = ({ device, ventilationTypes, onDeviceUpdated, onDeviceDeleted
                     <p>Цена: {device.price} ₽</p>
                     <p>Тип вентиляции: {device.ventilationType?.name}</p>
                 </div>
+                {isAdmin && (
+                    <div className="admin-controls">
+                        <button 
+                            className="edit-button"
+                            onClick={(e) => {
+                                e.stopPropagation();
+                                setShowEditForm(true);
+                            }}
+                        >
+                            Редактировать
+                        </button>
+                    </div>
+                )}
             </div>
 
             {showEditForm && (
