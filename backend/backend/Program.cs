@@ -63,6 +63,7 @@ namespace backend
             builder.Services.AddScoped<UpdateDeviceService>();
             builder.Services.AddScoped<ImageService>();
             builder.Services.AddScoped<IVentilationTypeRepository, VentilationTypeRepository>();
+            builder.Services.AddScoped<IUserRepository, UserRepository>();
             builder.Services.AddScoped<IAuthService, AuthService>();
 
             builder.Services.AddDbContext<ApplicationDbContext>(
