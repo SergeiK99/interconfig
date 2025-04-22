@@ -2,6 +2,9 @@ import React, { useEffect, useState } from 'react';
 import './Catalog.css';
 import CreateDeviceForm from './CreateDeviceForm';
 import DeviceCard from './DeviceCard';
+import LoadingSpinner from './LoadingSpinner';
+import { fetchDevises } from '../services/Devices';
+import { fetchVentilationTypes } from '../services/VentilationTypes';
 
 const Catalog = () => {
     const [devices, setDevices] = useState([]);
@@ -13,20 +16,17 @@ const Catalog = () => {
     useEffect(() => {
         const fetchData = async () => {
             try {
-                const [devicesResponse, typesResponse] = await Promise.all([
-                    fetch('http://localhost:5115/api/Devices'),
-                    fetch('http://localhost:5115/api/VentilationTypes')
+                const [devicesData, typesData] = await Promise.all([
+                    fetchDevises(),
+                    fetchVentilationTypes()
                 ]);
                 
-                if (!devicesResponse.ok || !typesResponse.ok) {
+                if (devicesData && typesData) {
+                    setDevices(devicesData);
+                    setVentilationTypes(typesData);
+                } else {
                     throw new Error('Ошибка загрузки данных');
                 }
-                
-                const devicesData = await devicesResponse.json();
-                const typesData = await typesResponse.json();
-                
-                setDevices(devicesData);
-                setVentilationTypes(typesData);
             } catch (err) {
                 setError(err.message);
             } finally {
@@ -41,12 +41,34 @@ const Catalog = () => {
         setDevices([...devices, newDevice]);
     };
 
+    const handleDeviceUpdated = (updatedDevice) => {
+        setDevices(devices.map(device => 
+            device.id === updatedDevice.id ? updatedDevice : device
+        ));
+    };
+
+    const handleDeviceDeleted = (deviceId) => {
+        setDevices(devices.filter(device => device.id !== deviceId));
+    };
+
     if (loading) {
-        return <div>Загрузка...</div>;
+        return <LoadingSpinner message="Загрузка каталога устройств..." />;
     }
 
     if (error) {
-        return <div>Ошибка: {error}</div>;
+        return (
+            <div className="error-container">
+                <div className="error-icon">⚠️</div>
+                <h2>Произошла ошибка</h2>
+                <p>{error}</p>
+                <button 
+                    className="retry-button blue-button"
+                    onClick={() => window.location.reload()}
+                >
+                    Попробовать снова
+                </button>
+            </div>
+        );
     }
 
     return (
@@ -71,7 +93,13 @@ const Catalog = () => {
 
             <div className="devices-grid">
                 {devices.map((device) => (
-                    <DeviceCard key={device.id} device={device} />
+                    <DeviceCard 
+                        key={device.id} 
+                        device={device}
+                        ventilationTypes={ventilationTypes}
+                        onDeviceUpdated={handleDeviceUpdated}
+                        onDeviceDeleted={handleDeviceDeleted}
+                    />
                 ))}
             </div>
         </div>

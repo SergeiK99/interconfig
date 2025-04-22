@@ -1,12 +1,14 @@
-﻿using System;
+﻿using Microsoft.AspNetCore.Http;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace BackendModels.DTOs
+namespace backend.DTOs
 {
+    //DTO сущности Device для корректного создания
     public class DeviceDto
     {
         public int Id { get; set; }
@@ -16,7 +18,7 @@ namespace BackendModels.DTOs
 
         public string Description { get; set; }
 
-        public string Image { get; set; }
+        public string? ImagePath { get; set; }
 
         public int PowerConsumption { get; set; }
 

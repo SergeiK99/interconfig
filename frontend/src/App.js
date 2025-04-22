@@ -11,7 +11,7 @@ function App() {
         <nav className="navbar">
           <ul className="nav-links">
             <li><Link to="/">Конфигуратор</Link></li>
-            <li><Link to="/catalog">Список устройств</Link></li>
+            <li><Link to="/catalog">Каталог устройств</Link></li>
           </ul>
         </nav>
       </header>
