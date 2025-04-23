@@ -1,0 +1,77 @@
+/* src/Configurator.css */
+
+.configurator-container {
+    display: flex;
+    justify-content: space-between;
+    max-width: 1200px;
+    margin: 20px auto;
+    padding: 20px;
+}
+
+.result-section {
+    flex: 3; /* Занимает больше места */
+    padding: 20px;
+    background-color: #f9f9f9;
+    border-right: 1px solid #ddd;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start; /* Вертикальное выравнивание в верхней части */
+    text-align: center; /* Центрируем текст */
+    border-radius: 8px 0 0 8px; /* Закругление слева */
+}
+
+.result-section h2 {
+    margin-bottom: 10px;
+}
+
+.result-text {
+    font-size: 1.5em; /* Увеличиваем шрифт результатов */
+    color: #333;
+}
+
+.configurator-form {
+    flex: 1; /* Занимает меньше места */
+    padding: 20px;
+    background-color: #ffffff;
+    border-radius: 0 8px 8px 0; /* Закругление справа */
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+}
+
+.configurator-form h2 {
+    margin-bottom: 20px;
+}
+
+.form-group {
+    margin-bottom: 15px;
+}
+
+.form-group label {
+    display: block;
+    margin-bottom: 5px;
+    font-weight: bold;
+}
+
+.input-field, .select-field {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    font-size: 16px;
+    box-sizing: border-box;
+}
+
+.submit-button {
+    background-color: #2196F3;
+    color: white;
+    padding: 12px 24px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 16px;
+    transition: background-color 0.3s;
+    width: 100%;
+}
+
+.submit-button:hover {
+    background-color: #0b7dda;
+} 

@@ -1,0 +1,15 @@
+﻿services:
+  postgres:
+    image: postgres:latest
+    container_name: InterConfigDb
+    environment:
+      POSTGRES_DB: InterConfigDb
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: 123
+    ports:
+      - "5433:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+volumes:
+  postgres_data:
