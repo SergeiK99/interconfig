@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import './DeviceCard.css';
 import EditDeviceForm from './EditDeviceForm';
 
-const DeviceCard = ({ device, ventilationTypes, onDeviceUpdated, onDeviceDeleted, isAdmin }) => {
+const DeviceCard = ({ device, deviceTypes, onDeviceUpdated, onDeviceDeleted, isAdmin }) => {
     const [showEditForm, setShowEditForm] = useState(false);
     const imageUrl = device.imagePath ? `http://localhost:5115${device.imagePath}` : '/placeholder-device.png';
 
@@ -20,12 +20,12 @@ const DeviceCard = ({ device, ventilationTypes, onDeviceUpdated, onDeviceDeleted
                     <img src={imageUrl} alt={device.name} className="device-image" />
                 </div>
                 <div className="device-details">
-                    <p>{device.description}</p>
+                    <p>Тип устройства: {device.deviceType?.name}</p>
+                    <p>Описание: {device.description}</p>
                     <p>Потребление энергии: {device.powerConsumption} Вт</p>
                     <p>Уровень шума: {device.noiseLevel} дБ</p>
                     <p>Максимальный воздушный поток: {device.maxAirflow} м³/ч</p>
                     <p>Цена: {device.price} ₽</p>
-                    <p>Тип вентиляции: {device.ventilationType?.name}</p>
                 </div>
                 {isAdmin && (
                     <div className="admin-controls">
@@ -38,6 +38,15 @@ const DeviceCard = ({ device, ventilationTypes, onDeviceUpdated, onDeviceDeleted
                         >
                             Редактировать
                         </button>
+                        <button 
+                            className="delete-button"
+                            onClick={(e) => {
+                                e.stopPropagation();
+                                onDeviceDeleted(device.id);
+                            }}
+                        >
+                            Удалить
+                        </button>
                     </div>
                 )}
             </div>
@@ -45,7 +54,7 @@ const DeviceCard = ({ device, ventilationTypes, onDeviceUpdated, onDeviceDeleted
             {showEditForm && (
                 <EditDeviceForm
                     device={device}
-                    ventilationTypes={ventilationTypes}
+                    deviceTypes={deviceTypes}
                     onClose={() => setShowEditForm(false)}
                     onDeviceUpdated={onDeviceUpdated}
                     onDeviceDeleted={onDeviceDeleted}

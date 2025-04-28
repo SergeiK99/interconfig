@@ -19,7 +19,7 @@ namespace backend.Services
 
         public async Task<Device> AddDeviceAsync(DeviceDto deviceDto, IFormFile imageFile)
         {
-            var ventilationType = await _deviceRepository.GetVentilationTypeByIdAsync(deviceDto.VentilationTypeId);
+            var ventilationType = await _deviceRepository.GetDeviceTypeByIdAsync(deviceDto.DeviceTypeId);
             if (ventilationType == null)
             {
                 throw new ArgumentException("Указанный тип вентиляции не найден.");

@@ -1,31 +1,30 @@
 // src/Configurator.js
 import React, { useEffect, useState } from 'react';
 import './Configurator.css';
-import { fetchVentilationTypes } from '../services/VentilationTypes';
+import { fetchDeviceTypes } from '../services/DeviceTypes';
 
 const Configurator = () => {
-  const [ventilationTypes, setVentilationTypes] = useState([]);
-  const [selectedVentilationType, setSelectedVentilationType] = useState('');
-
-  useEffect(() => {
-    const fetchData = async () => {
-      let ventTypes = await fetchVentilationTypes();
-      
-      setVentilationTypes(ventTypes);
-    };
-    fetchData();
-  }, [])
-
-  const [peopleCount, setPeopleCount] = useState('');
+  const [deviceTypes, setDeviceTypes] = useState([]);
+  const [selectedDeviceType, setSelectedDeviceType] = useState('');
   const [roomType, setRoomType] = useState('');
   const [roomSize, setRoomSize] = useState('');
+  const [peopleCount, setPeopleCount] = useState('');
   const [result, setResult] = useState('');
 
-  const handleSubmit = (e) => {
-    e.preventDefault();
+  useEffect(() => {
+    const loadDeviceTypes = async () => {
+      try {
+        let types = await fetchDeviceTypes();
+        setDeviceTypes(types);
+      } catch (error) {
+        console.error('Error loading device types:', error);
+      }
+    };
+    loadDeviceTypes();
+  }, []);
 
-    // Логика выбора системы вентиляции на основе введенных данных
-    setResult(`Подходящая система для ${peopleCount} человек в типе "${roomType}" размером "${roomSize}" м²: ${ventilationTypes}`);
+  const handleCalculate = () => {
+    setResult(`Подходящая система для ${peopleCount} человек в типе "${roomType}" размером "${roomSize}" м²: ${deviceTypes}`);
   };
 
   return (
@@ -34,19 +33,19 @@ const Configurator = () => {
         <h2>Результаты</h2>
         <p className="result-text">{result || "Результат будет отображен здесь"}</p>
       </div>
-      <form onSubmit={handleSubmit} className="configurator-form">
+      <form onSubmit={handleCalculate} className="configurator-form">
         <h2>Конфигуратор</h2>
         <div className="form-group">
-          <label>Тип системы вентиляции:</label>
+          <label>Тип устройства:</label>
           <select
-            value={selectedVentilationType}
-            onChange={(e) => setSelectedVentilationType(e.target.value)}
+            value={selectedDeviceType}
+            onChange={(e) => setSelectedDeviceType(e.target.value)}
             required
             className="input-field select-field"
           >
-            <option value="">Выберите...</option>
-            {ventilationTypes.map((type) => (
-              <option key={type.id} value={type.name}>{type.name}</option>
+            <option value="">Выберите тип устройства</option>
+            {deviceTypes.map((type) => (
+              <option key={type.id} value={type.id}>{type.name}</option>
             ))}
           </select>
         </div>

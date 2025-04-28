@@ -2,7 +2,7 @@ import React, { useState, useRef } from 'react';
 import './CreateDeviceForm.css';
 import { updateDevice, deleteDevice } from '../services/Devices';
 
-const EditDeviceForm = ({ device, ventilationTypes, onClose, onDeviceUpdated, onDeviceDeleted }) => {
+const EditDeviceForm = ({ device, deviceTypes, onClose, onDeviceUpdated, onDeviceDeleted }) => {
     const [editedDevice, setEditedDevice] = useState({
         name: device.name,
         description: device.description,
@@ -10,7 +10,8 @@ const EditDeviceForm = ({ device, ventilationTypes, onClose, onDeviceUpdated, on
         noiseLevel: device.noiseLevel,
         maxAirflow: device.maxAirflow,
         price: device.price,
-        ventilationTypeId: device.ventilationTypeId
+        deviceTypeId: device.deviceTypeId,
+        image: null
     });
     const [imagePreview, setImagePreview] = useState(device.imagePath ? `http://localhost:5115${device.imagePath}` : null);
     const [selectedImage, setSelectedImage] = useState(null);
@@ -115,15 +116,15 @@ const EditDeviceForm = ({ device, ventilationTypes, onClose, onDeviceUpdated, on
                         />
                     </div>
                     <div className="form-group">
-                        <label>Тип вентиляции:</label>
+                        <label>Тип устройства:</label>
                         <select
-                            name="ventilationTypeId"
-                            value={editedDevice.ventilationTypeId}
+                            name="deviceTypeId"
+                            value={editedDevice.deviceTypeId}
                             onChange={handleInputChange}
                             required
                         >
-                            <option value="">Выберите тип вентиляции</option>
-                            {ventilationTypes.map((type) => (
+                            <option value="">Выберите тип устройства</option>
+                            {deviceTypes.map((type) => (
                                 <option key={type.id} value={type.id}>{type.name}</option>
                             ))}
                         </select>

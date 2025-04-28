@@ -5,7 +5,7 @@ namespace backend.Extensions
 {
     public static class DeviceMappingExtensions
     {
-        public static Device MapToModel(this DeviceDto deviceDto, VentilationType ventilationType)
+        public static Device MapToModel(this DeviceDto deviceDto, DeviceType deviceType)
         {
             return new Device
             {
@@ -16,8 +16,8 @@ namespace backend.Extensions
                 NoiseLevel = deviceDto.NoiseLevel,
                 MaxAirflow = deviceDto.MaxAirflow,
                 Price = deviceDto.Price,
-                VentilationTypeId = deviceDto.VentilationTypeId,
-                VentilationType = ventilationType
+                DeviceTypeId = deviceDto.DeviceTypeId,
+                DeviceType = deviceType
             };
         }
     }

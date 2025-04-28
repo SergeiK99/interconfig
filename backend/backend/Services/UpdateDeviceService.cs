@@ -1,4 +1,4 @@
-using backend.DTOs;
+﻿using backend.DTOs;
 using BackendDataAccess.Repositories.IRepositories;
 using BackendModels;
 using Microsoft.AspNetCore.Http;
@@ -21,16 +21,16 @@ namespace backend.Services
             var existingDevice = await _deviceRepository.GetByIdAsync(id);
             if (existingDevice == null)
             {
-                throw new ArgumentException($"Устройство с ID {id} не найдено");
+                throw new ArgumentException($"РЈСЃС‚СЂРѕР№СЃС‚РІРѕ СЃ ID {id} РЅРµ РЅР°Р№РґРµРЅРѕ");
             }
 
-            var ventilationType = await _deviceRepository.GetVentilationTypeByIdAsync(deviceDto.VentilationTypeId);
+            var ventilationType = await _deviceRepository.GetDeviceTypeByIdAsync(deviceDto.DeviceTypeId);
             if (ventilationType == null)
             {
-                throw new ArgumentException("Указанный тип вентиляции не найден");
+                throw new ArgumentException("РЈРєР°Р·Р°РЅРЅС‹Р№ С‚РёРї РІРµРЅС‚РёР»СЏС†РёРё РЅРµ РЅР°Р№РґРµРЅ");
             }
 
-            // Если предоставлено новое изображение, удаляем старое и сохраняем новое
+            // Р•СЃР»Рё РїСЂРµРґРѕСЃС‚Р°РІР»РµРЅРѕ РЅРѕРІРѕРµ РёР·РѕР±СЂР°Р¶РµРЅРёРµ, СѓРґР°Р»СЏРµРј СЃС‚Р°СЂРѕРµ Рё СЃРѕС…СЂР°РЅСЏРµРј РЅРѕРІРѕРµ
             if (image != null && image.Length > 0)
             {
                 if (!string.IsNullOrEmpty(existingDevice.ImagePath))
@@ -41,11 +41,11 @@ namespace backend.Services
             }
             else
             {
-                // Если новое изображение не предоставлено, сохраняем существующий путь
+                // Р•СЃР»Рё РЅРѕРІРѕРµ РёР·РѕР±СЂР°Р¶РµРЅРёРµ РЅРµ РїСЂРµРґРѕСЃС‚Р°РІР»РµРЅРѕ, СЃРѕС…СЂР°РЅСЏРµРј СЃСѓС‰РµСЃС‚РІСѓСЋС‰РёР№ РїСѓС‚СЊ
                 deviceDto.ImagePath = existingDevice.ImagePath;
             }
 
-            // Обновляем данные существующего устройства
+            // РћР±РЅРѕРІР»СЏРµРј РґР°РЅРЅС‹Рµ СЃСѓС‰РµСЃС‚РІСѓСЋС‰РµРіРѕ СѓСЃС‚СЂРѕР№СЃС‚РІР°
             existingDevice.Name = deviceDto.Name;
             existingDevice.Description = deviceDto.Description;
             existingDevice.ImagePath = deviceDto.ImagePath;
@@ -53,8 +53,8 @@ namespace backend.Services
             existingDevice.NoiseLevel = deviceDto.NoiseLevel;
             existingDevice.MaxAirflow = deviceDto.MaxAirflow;
             existingDevice.Price = deviceDto.Price;
-            existingDevice.VentilationTypeId = deviceDto.VentilationTypeId;
-            existingDevice.VentilationType = ventilationType;
+            existingDevice.DeviceTypeId = deviceDto.DeviceTypeId;
+            existingDevice.DeviceType = ventilationType;
 
             await _deviceRepository.UpdateAsync(existingDevice);
             return existingDevice;

@@ -5,9 +5,9 @@ using System.Security.Cryptography.X509Certificates;
 
 namespace BackendDataAccess.Configurations
 {
-    public class VentilationTypeConfiguration : IEntityTypeConfiguration<VentilationType>
+    public class DeviceTypeConfiguration : IEntityTypeConfiguration<DeviceType>
     {
-        public void Configure(EntityTypeBuilder<VentilationType> builder)
+        public void Configure(EntityTypeBuilder<DeviceType> builder)
         {
             builder.HasKey(x => x.Id);
         }

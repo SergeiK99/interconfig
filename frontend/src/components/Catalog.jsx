@@ -3,8 +3,8 @@ import './Catalog.css';
 import CreateDeviceForm from './CreateDeviceForm';
 import DeviceCard from './DeviceCard';
 import LoadingSpinner from './LoadingSpinner';
-import { fetchDevises } from '../services/Devices';
-import { fetchVentilationTypes } from '../services/VentilationTypes';
+import { fetchDevices } from '../services/Devices';
+import { fetchDeviceTypes } from '../services/DeviceTypes';
 import { useAuth } from '../context/AuthContext';
 
 const Catalog = () => {
@@ -12,7 +12,7 @@ const Catalog = () => {
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
     const [showCreateForm, setShowCreateForm] = useState(false);
-    const [ventilationTypes, setVentilationTypes] = useState([]);
+    const [deviceTypes, setDeviceTypes] = useState([]);
     const { user } = useAuth();
     const isAdmin = user && user.role === 'Admin';
 
@@ -20,13 +20,13 @@ const Catalog = () => {
         const fetchData = async () => {
             try {
                 const [devicesData, typesData] = await Promise.all([
-                    fetchDevises(),
-                    fetchVentilationTypes()
+                    fetchDevices(),
+                    fetchDeviceTypes()
                 ]);
                 
                 if (devicesData && typesData) {
                     setDevices(devicesData);
-                    setVentilationTypes(typesData);
+                    setDeviceTypes(typesData);
                 } else {
                     throw new Error('Ошибка загрузки данных');
                 }
@@ -42,6 +42,7 @@ const Catalog = () => {
 
     const handleDeviceCreated = (newDevice) => {
         setDevices([...devices, newDevice]);
+        setShowCreateForm(false);
     };
 
     const handleDeviceUpdated = (updatedDevice) => {
@@ -90,7 +91,7 @@ const Catalog = () => {
 
             {showCreateForm && (
                 <CreateDeviceForm 
-                    ventilationTypes={ventilationTypes}
+                    deviceTypes={deviceTypes}
                     onClose={() => setShowCreateForm(false)}
                     onDeviceCreated={handleDeviceCreated}
                 />
@@ -101,7 +102,7 @@ const Catalog = () => {
                     <DeviceCard 
                         key={device.id} 
                         device={device}
-                        ventilationTypes={ventilationTypes}
+                        deviceTypes={deviceTypes}
                         onDeviceUpdated={handleDeviceUpdated}
                         onDeviceDeleted={handleDeviceDeleted}
                         isAdmin={isAdmin}

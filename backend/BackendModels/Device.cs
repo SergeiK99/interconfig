@@ -25,8 +25,8 @@ namespace BackendModels
         public int MaxAirflow { get; set; }
         [Range(1, int.MaxValue)]
         public int Price { get; set; }
-        public int VentilationTypeId { get; set; }
-        [ForeignKey("VentilationTypeId")]
-        public required VentilationType VentilationType { get; set; }
+        public int DeviceTypeId { get; set; }
+        [ForeignKey("DeviceTypeId")]
+        public required DeviceType DeviceType { get; set; }
     }
 }
