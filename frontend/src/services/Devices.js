@@ -17,53 +17,49 @@ const getAuthHeaders = (isFormData = false) => {
     return headers;
 };
 
-export const fetchDevises = async () => {
-    try{
-        var response = await axios.get(`${API_BASE_URL}/Devices`);
-        return response.data;
-    } catch(e) {
-        console.error(e);
-    }
-}
-
-export const createDevice = async (device) => {
-    try{
-        // Проверяем, является ли device экземпляром FormData
-        const isFormData = device instanceof FormData;
-        
-        var response = await axios.post(`${API_BASE_URL}/Devices`, device, {
-            headers: getAuthHeaders(isFormData)
-        });
-        return response.data;
-    } catch(e) {
-        console.error(e);
-        throw e;
-    }
-}
-
-export const updateDevice = async (id, device) => {
+export const fetchDevices = async () => {
     try {
-        // Проверяем, является ли device экземпляром FormData
-        const isFormData = device instanceof FormData;
-        
-        const response = await axios.put(`${API_BASE_URL}/Devices/${id}`, device, {
-            headers: getAuthHeaders(isFormData)
+        const response = await axios.get(`${API_BASE_URL}/Devices`, {
+            headers: getAuthHeaders()
         });
         return response.data;
-    } catch(e) {
-        console.error(e);
-        throw e;
+    } catch (error) {
+        console.error('Error fetching devices:', error);
+        throw error;
     }
-}
+};
+
+export const createDevice = async (formData) => {
+    try {
+        const response = await axios.post(`${API_BASE_URL}/Devices`, formData, {
+            headers: getAuthHeaders(true)
+        });
+        return response.data;
+    } catch (error) {
+        console.error('Error creating device:', error);
+        throw error;
+    }
+};
+
+export const updateDevice = async (id, formData) => {
+    try {
+        const response = await axios.put(`${API_BASE_URL}/Devices/${id}`, formData, {
+            headers: getAuthHeaders(true)
+        });
+        return response.data;
+    } catch (error) {
+        console.error('Error updating device:', error);
+        throw error;
+    }
+};
 
 export const deleteDevice = async (id) => {
     try {
         await axios.delete(`${API_BASE_URL}/Devices/${id}`, {
             headers: getAuthHeaders()
         });
-        return true;
-    } catch(e) {
-        console.error(e);
-        throw e;
+    } catch (error) {
+        console.error('Error deleting device:', error);
+        throw error;
     }
-}
+};

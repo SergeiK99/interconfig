@@ -38,15 +38,6 @@ const DeviceCard = ({ device, deviceTypes, onDeviceUpdated, onDeviceDeleted, isA
                         >
                             Редактировать
                         </button>
-                        <button 
-                            className="delete-button"
-                            onClick={(e) => {
-                                e.stopPropagation();
-                                onDeviceDeleted(device.id);
-                            }}
-                        >
-                            Удалить
-                        </button>
                     </div>
                 )}
             </div>
