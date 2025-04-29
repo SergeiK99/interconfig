@@ -15,6 +15,7 @@ const Navigation = () => {
         <ul className="nav-links">
           <li><Link to="/">Конфигуратор</Link></li>
           <li><Link to="/catalog">Каталог устройств</Link></li>
+          <li><Link to="/ai-consultant">ИИ-консультант</Link></li>
         </ul>
         
         <div className="auth-buttons">

@@ -65,6 +65,11 @@ namespace backend
             builder.Services.AddScoped<IDeviceTypeRepository, DeviceTypeRepository>();
             builder.Services.AddScoped<IUserRepository, UserRepository>();
             builder.Services.AddScoped<IAuthService, AuthService>();
+            builder.Services.AddScoped<GigaChatService>(sp => 
+                new GigaChatService(
+                    sp.GetRequiredService<IConfiguration>(),
+                    sp.GetRequiredService<IDeviceRepository>()
+                ));
 
             builder.Services.AddDbContext<ApplicationDbContext>(
                 options =>

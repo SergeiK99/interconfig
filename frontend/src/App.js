@@ -5,6 +5,7 @@ import Configurator from './components/Configurator';
 import Catalog from './components/Catalog';
 import Navigation from './components/Navigation';
 import { AuthProvider } from './context/AuthContext';
+import AIConsultantPage from './components/pages/AIConsultantPage';
 
 function App() {
   return (
@@ -15,6 +16,7 @@ function App() {
           <Routes>
             <Route path="/" element={<Configurator />} />
             <Route path="/catalog" element={<div className="catalog-page"><Catalog /></div>} />
+            <Route path="/ai-consultant" element={<div className="ai-consultant-page"><AIConsultantPage /></div>} />
           </Routes>
         </div>
       </Router>
