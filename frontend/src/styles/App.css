@@ -213,4 +213,105 @@ h1 {
   flex-direction: column; /* Выравниваем по вертикали, если нужны несколько элементов */
   min-height: calc(100vh - 80px); /* Обеспечиваем минимальную высоту для центрирования */
 }
+
+/* Cart and Navigation Styles */
+.cart-link,
+.orders-link {
+    position: relative;
+    color: #333;
+    text-decoration: none;
+    margin-right: 1rem;
+    font-size: 1.2rem;
+    padding: 0.5rem;
+    border-radius: 0.25rem;
+    transition: all 0.3s ease;
+}
+
+.cart-link:hover,
+.orders-link:hover {
+    background-color: rgba(0, 0, 0, 0.05);
+    color: #007bff;
+}
+
+.cart-badge {
+    position: absolute;
+    top: -5px;
+    right: -5px;
+    background-color: #dc3545;
+    color: white;
+    border-radius: 50%;
+    padding: 0.25rem 0.5rem;
+    font-size: 0.75rem;
+    min-width: 20px;
+    text-align: center;
+}
+
+/* Cart Page Styles */
+.cart-item-image {
+    max-width: 100px;
+    height: auto;
+    object-fit: contain;
+}
+
+.cart-item-quantity {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.cart-item-quantity button {
+    padding: 0.25rem 0.5rem;
+}
+
+.cart-item-quantity input {
+    width: 50px;
+    text-align: center;
+}
+
+/* Checkout Page Styles */
+.checkout-summary {
+    background-color: #f8f9fa;
+    padding: 1.5rem;
+    border-radius: 0.5rem;
+}
+
+.checkout-form {
+    max-width: 500px;
+    margin: 0 auto;
+}
+
+/* Orders Page Styles */
+.order-card {
+    transition: transform 0.2s ease;
+}
+
+.order-card:hover {
+    transform: translateY(-2px);
+}
+
+.order-status-badge {
+    font-size: 0.875rem;
+    padding: 0.25rem 0.5rem;
+}
+
+/* Responsive Styles */
+@media (max-width: 768px) {
+    .cart-item {
+        flex-direction: column;
+        text-align: center;
+    }
+
+    .cart-item-image {
+        margin-bottom: 1rem;
+    }
+
+    .cart-item-quantity {
+        justify-content: center;
+    }
+
+    .checkout-form {
+        padding: 0 1rem;
+    }
+}
+
 /* Навигация */

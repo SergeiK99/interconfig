@@ -12,12 +12,16 @@ export const authService = {
                 credentials: 'include',
             });
 
+            const data = await response.json();
+
             if (!response.ok) {
-                const error = await response.json();
-                throw new Error(error.message || 'Ошибка при входе');
+                throw new Error(data.message || 'Неверный email или пароль');
             }
 
-            return response.json();
+            if (data.token) {
+                localStorage.setItem('token', data.token);
+            }
+            return data;
         } catch (error) {
             console.error('Ошибка при входе:', error);
             throw error;
@@ -35,15 +39,27 @@ export const authService = {
                 credentials: 'include',
             });
 
+            const data = await response.json();
+
             if (!response.ok) {
-                const error = await response.json();
-                throw new Error(error.message || 'Ошибка при регистрации');
+                throw new Error(data.message || 'Ошибка при регистрации');
             }
 
-            return response.json();
+            if (data.token) {
+                localStorage.setItem('token', data.token);
+            }
+            return data;
         } catch (error) {
             console.error('Ошибка при регистрации:', error);
             throw error;
         }
     },
+
+    logout() {
+        localStorage.removeItem('token');
+    },
+
+    getToken() {
+        return localStorage.getItem('token');
+    }
 }; 

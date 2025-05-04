@@ -1,24 +1,26 @@
 import React, { useState } from 'react';
 import { useAuth } from '../context/AuthContext';
-import { authService } from '../services/authService';
 import '../styles/Auth.css';
 
 const LoginForm = ({ onClose }) => {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [error, setError] = useState('');
+    const [loading, setLoading] = useState(false);
     const { login } = useAuth();
 
     const handleSubmit = async (e) => {
         e.preventDefault();
         setError('');
+        setLoading(true);
 
         try {
-            const response = await authService.login(email, password);
-            login(response);
+            await login(email, password);
             onClose();
         } catch (err) {
-            setError(err.message);
+            setError(err.message || 'Ошибка при входе');
+        } finally {
+            setLoading(false);
         }
     };
 
@@ -38,6 +40,7 @@ const LoginForm = ({ onClose }) => {
                         value={email}
                         onChange={(e) => setEmail(e.target.value)}
                         required
+                        disabled={loading}
                     />
                 </div>
                 <div className="form-group">
@@ -48,9 +51,16 @@ const LoginForm = ({ onClose }) => {
                         value={password}
                         onChange={(e) => setPassword(e.target.value)}
                         required
+                        disabled={loading}
                     />
                 </div>
-                <button type="submit" className="submit-button">Войти</button>
+                <button 
+                    type="submit" 
+                    className="submit-button"
+                    disabled={loading}
+                >
+                    {loading ? 'Вход...' : 'Войти'}
+                </button>
             </form>
         </div>
     );

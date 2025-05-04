@@ -65,6 +65,8 @@ namespace backend
             builder.Services.AddScoped<IDeviceTypeRepository, DeviceTypeRepository>();
             builder.Services.AddScoped<IUserRepository, UserRepository>();
             builder.Services.AddScoped<IAuthService, AuthService>();
+            builder.Services.AddScoped<ICartService, CartService>();
+            builder.Services.AddScoped<IOrderService, OrderService>();
             builder.Services.AddScoped<GigaChatService>(sp => 
                 new GigaChatService(
                     sp.GetRequiredService<IConfiguration>(),
