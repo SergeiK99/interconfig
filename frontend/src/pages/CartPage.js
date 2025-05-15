@@ -2,7 +2,20 @@ import React, { useState } from 'react';
 import { useCart } from '../context/CartContext';
 import { useNavigate } from 'react-router-dom';
 import { Button, Card, Container, Form, Row, Col, Alert } from 'react-bootstrap';
-import { FaTrash, FaPlus, FaMinus } from 'react-icons/fa';
+import { FaTrash, FaPlus, FaMinus, FaShoppingCart } from 'react-icons/fa';
+
+const getCartItemImageUrl = (item) => {
+    if (item.device && item.device.imagePath) {
+        return `http://localhost:5115${item.device.imagePath}`;
+    }
+    if (item.imagePath) {
+        return `http://localhost:5115${item.imagePath}`;
+    }
+    if (item.deviceImagePath) {
+        return `http://localhost:5115${item.deviceImagePath}`;
+    }
+    return '/placeholder-device.png';
+};
 
 const CartPage = () => {
     const { cart, loading, error, updateCartItem, removeFromCart } = useCart();
@@ -37,7 +50,7 @@ const CartPage = () => {
     };
 
     if (loading) {
-        return <Container className="mt-4"><Alert variant="info">Loading cart...</Alert></Container>;
+        return <Container className="mt-4"><Alert variant="info">Загрузка корзины...</Alert></Container>;
     }
 
     if (error) {
@@ -47,9 +60,9 @@ const CartPage = () => {
     if (!cart || !cart.items || cart.items.length === 0) {
         return (
             <Container className="mt-4">
-                <Alert variant="info">Your cart is empty</Alert>
+                <Alert variant="info">Ваша корзина пуста</Alert>
                 <Button variant="primary" onClick={() => navigate('/')}>
-                    Continue Shopping
+                    Продолжить покупки
                 </Button>
             </Container>
         );
@@ -57,27 +70,40 @@ const CartPage = () => {
 
     return (
         <Container className="mt-4">
-            <h2>Shopping Cart</h2>
+            <h2 className="mb-4">
+                <FaShoppingCart className="me-2" style={{ fontSize: '1.5rem' }} />
+                Корзина
+            </h2>
             <Row>
                 <Col md={8}>
-                    {cart.items.map(item => (
+                    {cart.items.map(item => {
+                        console.log('Cart item:', item);
+                        return (
                         <Card key={item.id} className="mb-3">
                             <Card.Body>
-                                <Row>
-                                    <Col md={3}>
+                                <Row className="align-items-center">
+                                    <Col md={3} className="text-center">
                                         <img
-                                            src={item.deviceImage}
+                                            src={getCartItemImageUrl(item)}
                                             alt={item.deviceName}
                                             className="img-fluid cart-item-image"
-                                            style={{ maxHeight: '100px' }}
+                                            style={{ 
+                                                maxHeight: '100px', 
+                                                maxWidth: '100%', 
+                                                objectFit: 'contain' 
+                                            }}
+                                            onError={(e) => {
+                                                e.target.onerror = null;
+                                                e.target.src = '/placeholder-device.png';
+                                            }}
                                         />
                                     </Col>
-                                    <Col md={6}>
+                                    <Col md={5}>
                                         <h5>{item.deviceName}</h5>
-                                        <p className="text-muted">Price: ${item.devicePrice}</p>
+                                        <p className="text-muted">Цена: {item.devicePrice} ₽</p>
                                     </Col>
-                                    <Col md={3}>
-                                        <div className="cart-item-quantity">
+                                    <Col md={4}>
+                                        <div className="d-flex align-items-center justify-content-end">
                                             <Button
                                                 variant="outline-secondary"
                                                 size="sm"
@@ -113,27 +139,20 @@ const CartPage = () => {
                                 </Row>
                             </Card.Body>
                         </Card>
-                    ))}
+                        );
+                    })}
                 </Col>
                 <Col md={4}>
                     <Card>
                         <Card.Body>
-                            <h4>Order Summary</h4>
-                            <div className="d-flex justify-content-between mb-3">
-                                <span>Subtotal:</span>
-                                <span>${cart.totalPrice}</span>
-                            </div>
-                            <div className="d-flex justify-content-between mb-3">
-                                <span>Shipping:</span>
-                                <span>Free</span>
-                            </div>
-                            <div className="d-flex justify-content-between mb-3">
-                                <strong>Total:</strong>
-                                <strong>${cart.totalPrice}</strong>
+                            <h4>Сводка заказа</h4>
+                            <div className="d-flex justify-content-between mb-3 mt-4 border-top pt-3">
+                                <strong>Сумма заказа:</strong>
+                                <strong>{cart.totalPrice} ₽</strong>
                             </div>
                             <Form onSubmit={handleCheckout}>
                                 <Form.Group className="mb-3">
-                                    <Form.Label>Shipping Address</Form.Label>
+                                    <Form.Label>Адрес доставки</Form.Label>
                                     <Form.Control
                                         type="text"
                                         name="shippingAddress"
@@ -143,7 +162,7 @@ const CartPage = () => {
                                     />
                                 </Form.Group>
                                 <Form.Group className="mb-3">
-                                    <Form.Label>Phone Number</Form.Label>
+                                    <Form.Label>Номер телефона</Form.Label>
                                     <Form.Control
                                         type="tel"
                                         name="phoneNumber"
@@ -163,7 +182,7 @@ const CartPage = () => {
                                     />
                                 </Form.Group>
                                 <Form.Group className="mb-3">
-                                    <Form.Label>Notes (Optional)</Form.Label>
+                                    <Form.Label>Примечания (необязательно)</Form.Label>
                                     <Form.Control
                                         as="textarea"
                                         name="notes"
@@ -177,7 +196,7 @@ const CartPage = () => {
                                     type="submit"
                                     className="w-100"
                                 >
-                                    Proceed to Checkout
+                                    Перейти к оформлению
                                 </Button>
                             </Form>
                         </Card.Body>

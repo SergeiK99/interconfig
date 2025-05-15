@@ -3,7 +3,7 @@ import { useAuth } from '../context/AuthContext';
 import { authService } from '../services/authService';
 import '../styles/Auth.css';
 
-const RegisterForm = ({ onClose }) => {
+const RegisterForm = ({ onClose, onSwitchToLogin }) => {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [confirmPassword, setConfirmPassword] = useState('');
@@ -67,6 +67,9 @@ const RegisterForm = ({ onClose }) => {
                     />
                 </div>
                 <button type="submit" className="submit-button">Зарегистрироваться</button>
+                <div className="auth-switch-link">
+                    Уже есть аккаунт? <span onClick={onSwitchToLogin}>Войдите</span>
+                </div>
             </form>
         </div>
     );

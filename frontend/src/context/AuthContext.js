@@ -23,8 +23,8 @@ export const AuthProvider = ({ children }) => {
     const login = async (email, password) => {
         try {
             const userData = await authService.login(email, password);
-            setUser(userData);
-            localStorage.setItem('user', JSON.stringify(userData));
+        setUser(userData);
+        localStorage.setItem('user', JSON.stringify(userData));
             return userData;
         } catch (error) {
             console.error('Login error:', error);

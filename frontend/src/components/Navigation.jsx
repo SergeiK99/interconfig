@@ -14,24 +14,34 @@ const Navigation = () => {
 
   const cartItemCount = cart?.items?.reduce((total, item) => total + item.quantity, 0) || 0;
 
+  const handleSwitchToRegister = () => {
+    setShowLoginModal(false);
+    setShowRegisterModal(true);
+  };
+
+  const handleSwitchToLogin = () => {
+    setShowRegisterModal(false);
+    setShowLoginModal(true);
+  };
+
   return (
     <header className="app-header">
       <nav className="navbar">
         <ul className="nav-links">
           <li><Link to="/">Конфигуратор</Link></li>
-          <li><Link to="/catalog">Каталог устройств</Link></li>
           <li><Link to="/ai-consultant">ИИ-консультант</Link></li>
+          <li><Link to="/catalog">Каталог устройств</Link></li>
         </ul>
         
         <div className="auth-buttons">
           {user ? (
             <>
               <Link to="/cart" className="cart-link">
-                <FaShoppingCart />
+                <FaShoppingCart size={20} />
                 {cartItemCount > 0 && <span className="cart-badge">{cartItemCount}</span>}
               </Link>
               <Link to="/orders" className="orders-link">
-                <FaBox />
+                <FaBox size={20} />
               </Link>
               <span className="user-email">{user.email}</span>
               <button onClick={logout} className="logout-button">Выйти</button>
@@ -48,7 +58,10 @@ const Navigation = () => {
       {showLoginModal && (
         <div className="modal-overlay">
           <div className="modal-content">
-            <LoginForm onClose={() => setShowLoginModal(false)} />
+            <LoginForm 
+              onClose={() => setShowLoginModal(false)}
+              onSwitchToRegister={handleSwitchToRegister}
+            />
           </div>
         </div>
       )}
@@ -56,7 +69,10 @@ const Navigation = () => {
       {showRegisterModal && (
         <div className="modal-overlay">
           <div className="modal-content">
-            <RegisterForm onClose={() => setShowRegisterModal(false)} />
+            <RegisterForm 
+              onClose={() => setShowRegisterModal(false)}
+              onSwitchToLogin={handleSwitchToLogin}
+            />
           </div>
         </div>
       )}

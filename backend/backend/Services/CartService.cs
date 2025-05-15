@@ -148,7 +148,8 @@ public class CartService : ICartService
                 DeviceId = i.DeviceId,
                 DeviceName = i.Device.Name,
                 DevicePrice = i.Device.Price,
-                Quantity = i.Quantity
+                Quantity = i.Quantity,
+                DeviceImagePath = i.Device.ImagePath
             }).ToList(),
             TotalPrice = cart.TotalPrice
         };

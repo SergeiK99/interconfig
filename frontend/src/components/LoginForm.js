@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { useAuth } from '../context/AuthContext';
 import '../styles/Auth.css';
 
-const LoginForm = ({ onClose }) => {
+const LoginForm = ({ onClose, onSwitchToRegister }) => {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [error, setError] = useState('');
@@ -61,6 +61,9 @@ const LoginForm = ({ onClose }) => {
                 >
                     {loading ? 'Вход...' : 'Войти'}
                 </button>
+                <div className="auth-switch-link">
+                    Ещё нет аккаунта? <span onClick={onSwitchToRegister}>Зарегистрируйтесь</span>
+                </div>
             </form>
         </div>
     );

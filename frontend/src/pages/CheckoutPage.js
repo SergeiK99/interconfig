@@ -27,12 +27,12 @@ const CheckoutPage = () => {
 
     const handlePlaceOrder = async () => {
         if (!location.state?.orderData) {
-            setError('Order data is missing');
+            setError('Данные заказа отсутствуют');
             return;
         }
 
         if (!user) {
-            setError('You must be logged in to place an order');
+            setError('Вы должны быть авторизованы для оформления заказа');
             return;
         }
 
@@ -54,10 +54,10 @@ const CheckoutPage = () => {
         } catch (err) {
             console.error('Error placing order:', err);
             if (err.response?.status === 401) {
-                setError('Your session has expired. Please log in again.');
+                setError('Ваша сессия истекла. Пожалуйста, войдите снова.');
                 navigate('/login', { state: { from: location.pathname } });
             } else {
-                setError(err.message || 'Failed to place order');
+                setError(err.message || 'Не удалось оформить заказ');
             }
         } finally {
             setLoading(false);
@@ -68,9 +68,9 @@ const CheckoutPage = () => {
         return (
             <Container className="mt-4 text-center">
                 <Spinner animation="border" role="status">
-                    <span className="visually-hidden">Processing order...</span>
+                    <span className="visually-hidden">Обработка заказа...</span>
                 </Spinner>
-                <p className="mt-3">Processing your order...</p>
+                <p className="mt-3">Обработка вашего заказа...</p>
             </Container>
         );
     }
@@ -80,16 +80,16 @@ const CheckoutPage = () => {
             <Container className="mt-4">
                 <Card>
                     <Card.Body className="text-center">
-                        <h2>Order Confirmed!</h2>
-                        <p className="lead">Thank you for your purchase!</p>
-                        <p>Your order number is: <strong>{order.id}</strong></p>
-                        <p>We've sent a confirmation email to: <strong>{order.email}</strong></p>
+                        <h2>Заказ подтвержден!</h2>
+                        <p className="lead">Спасибо за ваш заказ!</p>
+                        <p>Номер вашего заказа: <strong>{order.id}</strong></p>
+                        <p>Мы отправили подтверждение на email: <strong>{order.email}</strong></p>
                         <Button
                             variant="primary"
                             onClick={() => navigate('/orders')}
                             className="mt-3"
                         >
-                            View Order Details
+                            Посмотреть детали заказа
                         </Button>
                     </Card.Body>
                 </Card>
@@ -101,30 +101,30 @@ const CheckoutPage = () => {
         <Container className="mt-4">
             <Card>
                 <Card.Body>
-                    <h2>Review Your Order</h2>
+                    <h2>Проверьте ваш заказ</h2>
                     {error && <Alert variant="danger">{error}</Alert>}
                     
                     <div className="mb-4">
-                        <h4>Order Summary</h4>
+                        <h4>Сводка заказа</h4>
                         {cart.items.map(item => (
                             <div key={item.id} className="d-flex justify-content-between mb-2">
                                 <span>{item.deviceName} x {item.quantity}</span>
-                                <span>${(item.devicePrice * item.quantity).toFixed(2)}</span>
+                                <span>{(item.devicePrice * item.quantity).toFixed(2)} ₽</span>
                             </div>
                         ))}
-                        <div className="d-flex justify-content-between mt-3">
-                            <strong>Total:</strong>
-                            <strong>${cart.totalPrice.toFixed(2)}</strong>
+                        <div className="d-flex justify-content-between mt-3 pt-3 border-top">
+                            <strong>Сумма заказа:</strong>
+                            <strong>{cart.totalPrice.toFixed(2)} ₽</strong>
                         </div>
                     </div>
 
                     <div className="mb-4">
-                        <h4>Shipping Information</h4>
-                        <p><strong>Address:</strong> {location.state?.orderData?.shippingAddress}</p>
-                        <p><strong>Phone:</strong> {location.state?.orderData?.phoneNumber}</p>
+                        <h4>Информация о доставке</h4>
+                        <p><strong>Адрес:</strong> {location.state?.orderData?.shippingAddress}</p>
+                        <p><strong>Телефон:</strong> {location.state?.orderData?.phoneNumber}</p>
                         <p><strong>Email:</strong> {location.state?.orderData?.email}</p>
                         {location.state?.orderData?.notes && (
-                            <p><strong>Notes:</strong> {location.state.orderData.notes}</p>
+                            <p><strong>Примечания:</strong> {location.state.orderData.notes}</p>
                         )}
                     </div>
 
@@ -133,14 +133,14 @@ const CheckoutPage = () => {
                             variant="outline-secondary"
                             onClick={() => navigate('/cart')}
                         >
-                            Back to Cart
+                            Вернуться в корзину
                         </Button>
                         <Button
                             variant="primary"
                             onClick={handlePlaceOrder}
                             disabled={loading}
                         >
-                            {loading ? 'Placing Order...' : 'Place Order'}
+                            {loading ? 'Оформление заказа...' : 'Оформить заказ'}
                         </Button>
                     </div>
                 </Card.Body>

@@ -18,6 +18,7 @@ public class CartItemDTO
     public decimal DevicePrice { get; set; }
     public int Quantity { get; set; }
     public decimal TotalPrice => DevicePrice * Quantity;
+    public string DeviceImagePath { get; set; }
 }
 
 public class AddToCartDTO
