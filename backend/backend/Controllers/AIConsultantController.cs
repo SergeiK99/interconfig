@@ -1,6 +1,9 @@
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using backend.Services;
+using backend.Models;
 using System.Threading.Tasks;
+using System;
+using System.Collections.Generic;
 
 namespace backend.Controllers
 {
@@ -16,15 +19,27 @@ namespace backend.Controllers
         }
 
         [HttpPost("recommend")]
-        public async Task<IActionResult> GetRecommendation([FromBody] string userQuery)
+        public async Task<IActionResult> GetRecommendation([FromBody] ChatRequest request)
         {
-            if (string.IsNullOrEmpty(userQuery))
+            if (string.IsNullOrEmpty(request.Query))
             {
                 return BadRequest("Запрос не может быть пустым");
             }
 
-            var recommendation = await _gigaChatService.GetDeviceRecommendation(userQuery);
-            return Ok(new { recommendation });
+            try
+            {
+                // Исправляем проблему с оператором ??
+                var recommendation = await _gigaChatService.GetDeviceRecommendation(
+                    request.Query,
+                    request.History ?? new List<ChatMessage>()
+                );
+
+                return Ok(new { recommendation });
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new { error = "Произошла ошибка при получении рекомендации" });
+            }
         }
     }
-} 
+}

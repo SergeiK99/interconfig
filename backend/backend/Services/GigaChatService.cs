@@ -7,7 +7,9 @@ using System;
 using System.Text.Json.Serialization;
 using BackendDataAccess.Repositories.IRepositories;
 using BackendModels;
+using backend.Models;
 using System.Linq;
+using System.Collections.Generic;
 
 namespace backend.Services
 {
@@ -20,6 +22,7 @@ namespace backend.Services
         private string _accessToken;
         private DateTime _tokenExpiration;
         private readonly IDeviceRepository _deviceRepository;
+        private readonly string _sessionId;
 
         public GigaChatService(IConfiguration configuration, IDeviceRepository deviceRepository)
         {
@@ -28,6 +31,7 @@ namespace backend.Services
             _tokenUrl = "https://ngw.devices.sberbank.ru:9443/api/v2/oauth";
             _apiUrl = configuration["GigaChat:ApiUrl"];
             _deviceRepository = deviceRepository;
+            _sessionId = Guid.NewGuid().ToString();
         }
 
         private async Task<string> GetAccessTokenAsync()
@@ -59,10 +63,11 @@ namespace backend.Services
             return _accessToken;
         }
 
-        public async Task<string> GetDeviceRecommendation(string userQuery)
+        public async Task<string> GetDeviceRecommendation(string userQuery, List<Models.ChatMessage> chatHistory = null)
         {
             try
             {
+                // Получаем все устройства из базы данных
                 var devices = await _deviceRepository.GetAllAsync();
                 var devicesList = devices.ToList();
 
@@ -71,7 +76,8 @@ namespace backend.Services
                     return "Извините, в базе данных нет доступных устройств.";
                 }
 
-                var devicesInfo = string.Join("\n", devicesList.Select(d => 
+                // Формируем информацию об устройствах для ИИ
+                var devicesInfo = string.Join("\n", devicesList.Select(d =>
                     $"Устройство: {d.Name}, " +
                     $"Описание: {d.Description}, " +
                     $"Макс. расход воздуха: {d.MaxAirflow} м³/ч, " +
@@ -81,26 +87,38 @@ namespace backend.Services
 
                 var accessToken = await GetAccessTokenAsync();
 
+                // Создаем список сообщений для отправки в GigaChat
+                var messages = new List<object>();
+
+                // Добавляем системное сообщение (инструкции для ИИ)
+                messages.Add(new
+                {
+                    role = "system",
+                    content = "Ты - консультант по подбору устройств вентиляции компании Tion. " +
+                            "Вот список доступных устройств:\n" + devicesInfo + "\n\n" +
+                            "Твоя задача - помочь пользователю выбрать подходящее устройство на основе его запроса. " +
+                            "Используй информацию из списка устройств для рекомендации. " +
+                            "Если пользователь ссылается на предыдущие рекомендации, учитывай контекст разговора."
+                });
+
+                // Добавляем историю чата (если есть)
+                if (chatHistory != null && chatHistory.Any())
+                {
+                    foreach (var message in chatHistory)
+                    {
+                        messages.Add(new
+                        {
+                            role = message.Role,
+                            content = message.Content
+                        });
+                    }
+                }
+
+                // Формируем запрос к GigaChat API
                 var requestBody = new
                 {
                     model = "GigaChat",
-                    messages = new[]
-                    {
-                        new
-                        {
-                            role = "system",
-                            content = "Ты - консультант по подбору устройств вентиляции компании Tion. " +
-                                    "Вот список доступных устройств:\n" + devicesInfo + "\n\n" +
-                                    "Твоя задача - помочь пользователю выбрать подходящее устройство на основе его запроса. " +
-                                    "Используй информацию из списка устройств для рекомендации. " +
-                                    "Отвечай, указывая конкретные модели из списка."
-                        },
-                        new
-                        {
-                            role = "user",
-                            content = userQuery
-                        }
-                    }
+                    messages = messages
                 };
 
                 var jsonContent = JsonSerializer.Serialize(requestBody);
@@ -108,8 +126,10 @@ namespace backend.Services
 
                 var request = new HttpRequestMessage(HttpMethod.Post, _apiUrl);
                 request.Headers.Add("Authorization", $"Bearer {accessToken}");
+                request.Headers.Add("X-Session-ID", _sessionId);
                 request.Content = content;
 
+                // Отправляем запрос и получаем ответ
                 var response = await _httpClient.SendAsync(request);
                 var responseContent = await response.Content.ReadAsStringAsync();
 
@@ -119,7 +139,7 @@ namespace backend.Services
                 }
 
                 var responseObject = JsonSerializer.Deserialize<GigaChatResponse>(responseContent);
-                
+
                 if (responseObject?.Choices == null || responseObject.Choices.Length == 0)
                 {
                     return "Извините, не удалось получить рекомендацию.";
@@ -140,6 +160,7 @@ namespace backend.Services
         }
     }
 
+    // Классы для API остаются здесь
     public class TokenResponse
     {
         [JsonPropertyName("access_token")]
@@ -175,4 +196,4 @@ namespace backend.Services
         [JsonPropertyName("content")]
         public string Content { get; set; }
     }
-} 
+}
