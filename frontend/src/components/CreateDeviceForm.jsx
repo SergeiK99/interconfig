@@ -1,6 +1,7 @@
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import './CreateDeviceForm.css';
 import { createDevice } from '../services/Devices';
+import { fetchPossibleCharacteristicsByDeviceTypeId } from '../services/DeviceTypes';
 
 const CreateDeviceForm = ({ deviceTypes, onClose, onDeviceCreated }) => {
     const [newDevice, setNewDevice] = useState({
@@ -15,6 +16,34 @@ const CreateDeviceForm = ({ deviceTypes, onClose, onDeviceCreated }) => {
     const [imagePreview, setImagePreview] = useState(null);
     const [selectedImage, setSelectedImage] = useState(null);
     const fileInputRef = useRef(null);
+    const [possibleCharacteristics, setPossibleCharacteristics] = useState([]);
+    const [deviceCharacteristics, setDeviceCharacteristics] = useState({}); // { possibleCharacteristicId: value }
+
+    useEffect(() => {
+        if (newDevice.deviceTypeId) {
+            fetchPossibleCharacteristicsByDeviceTypeId(newDevice.deviceTypeId)
+                .then(data => {
+                    setPossibleCharacteristics(data);
+                    const initialCharacteristics = {};
+                    data.forEach(pc => {
+                        if (pc.type === 'bool') {
+                            initialCharacteristics[pc.id] = false;
+                        } else {
+                            initialCharacteristics[pc.id] = '';
+                        }
+                    });
+                    setDeviceCharacteristics(initialCharacteristics);
+                })
+                .catch(error => {
+                    console.error('Error fetching possible characteristics:', error);
+                    setPossibleCharacteristics([]);
+                    setDeviceCharacteristics({});
+                });
+        } else {
+            setPossibleCharacteristics([]);
+            setDeviceCharacteristics({});
+        }
+    }, [newDevice.deviceTypeId]);
 
     const handleCreateDevice = async (e) => {
         e.preventDefault();
@@ -27,19 +56,52 @@ const CreateDeviceForm = ({ deviceTypes, onClose, onDeviceCreated }) => {
             alert('Числовые значения не могут быть отрицательными');
             return;
         }
+
+        // Валидация обязательных характеристик:
+        const missingCharacteristic = possibleCharacteristics.find(
+            pc => pc.isRequired && (deviceCharacteristics[pc.id] === '' || deviceCharacteristics[pc.id] === undefined || (pc.type === 'bool' && deviceCharacteristics[pc.id] === null))
+        );
+        if (missingCharacteristic) {
+            alert(`Пожалуйста, заполните значение для характеристики '${missingCharacteristic.name}'.`);
+            return;
+        }
         
         try {
             const formData = new FormData();
             
-            // Добавляем все поля устройства в FormData
-            Object.keys(newDevice).forEach(key => {
-                formData.append(key, newDevice[key]);
-            });
-            
+            // Добавляем все основные поля устройства в FormData
+            formData.append('Name', newDevice.name);
+            formData.append('Description', newDevice.description);
+            formData.append('PowerConsumption', newDevice.powerConsumption);
+            formData.append('NoiseLevel', newDevice.noiseLevel);
+            formData.append('MaxAirflow', newDevice.maxAirflow);
+            formData.append('Price', newDevice.price);
+            formData.append('DeviceTypeId', newDevice.deviceTypeId);
+
             // Добавляем изображение, если оно было выбрано
             if (selectedImage) {
                 formData.append('image', selectedImage);
             }
+
+            // Сборка характеристик для отправки:
+            const characteristicsArray = possibleCharacteristics
+                .filter(pc => {
+                    if (pc.type === 'bool') return true; // всегда отправляем для bool
+                    const val = deviceCharacteristics[pc.id];
+                    return val !== '' && val !== undefined && val !== null;
+                })
+                .map(pc => ({
+                    possibleCharacteristicId: pc.id,
+                    value: pc.type === 'bool'
+                        ? (!!deviceCharacteristics[pc.id] ? 'true' : 'false')
+                        : String(deviceCharacteristics[pc.id])
+                }));
+
+            // Новый способ: добавляем каждую характеристику как отдельные поля массива
+            characteristicsArray.forEach((c, i) => {
+                formData.append(`characteristics[${i}].possibleCharacteristicId`, c.possibleCharacteristicId);
+                formData.append(`characteristics[${i}].value`, c.value);
+            });
 
             const createdDevice = await createDevice(formData);
             
@@ -63,11 +125,17 @@ const CreateDeviceForm = ({ deviceTypes, onClose, onDeviceCreated }) => {
         }));
     };
 
+    const handleCharacteristicChange = (id, value) => {
+        setDeviceCharacteristics(prev => ({
+            ...prev,
+            [id]: value
+        }));
+    };
+
     const handleImageChange = (e) => {
         const file = e.target.files[0];
         if (file) {
             setSelectedImage(file);
-            // Создаем URL для предпросмотра изображения
             const imageUrl = URL.createObjectURL(file);
             setImagePreview(imageUrl);
         }
@@ -115,6 +183,8 @@ const CreateDeviceForm = ({ deviceTypes, onClose, onDeviceCreated }) => {
                             ))}
                         </select>
                     </div>
+
+                    {/* Поля для основных характеристик, которые были изначально */}
                     <div className="form-group">
                         <label>Потребление энергии (Вт):</label>
                         <input
@@ -159,6 +229,40 @@ const CreateDeviceForm = ({ deviceTypes, onClose, onDeviceCreated }) => {
                             required
                         />
                     </div>
+
+                    {/* Динамические поля для дополнительных характеристик */}
+                    {possibleCharacteristics.length > 0 && (
+                        <div className="additional-characteristics-section">
+                            <h3>Дополнительные характеристики</h3>
+                            {possibleCharacteristics.map(pc => (
+                                <div className="form-group" key={pc.id}>
+                                    {pc.type === 'bool' ? (
+                                        <label className="custom-checkbox">
+                                            <input
+                                                type="checkbox"
+                                                checked={!!deviceCharacteristics[pc.id]}
+                                                onChange={e => handleCharacteristicChange(pc.id, e.target.checked)}
+                                            />
+                                            <span className="checkmark"></span>
+                                            <span className="checkbox-label">{pc.name}{pc.unit ? ` (${pc.unit})` : ''}</span>
+                                        </label>
+                                    ) : (
+                                        <>
+                                            <label>
+                                                {pc.name}{pc.unit ? ` (${pc.unit})` : ''}
+                                            </label>
+                                            <input
+                                                type={pc.type === 'number' ? 'number' : 'text'}
+                                                value={deviceCharacteristics[pc.id] || ''}
+                                                onChange={e => handleCharacteristicChange(pc.id, e.target.value)}
+                                            />
+                                        </>
+                                    )}
+                                </div>
+                            ))}
+                        </div>
+                    )}
+
                     <div className="form-group image-upload-group">
                         <label>Изображение:</label>
                         <div className="image-upload-container">
@@ -167,8 +271,8 @@ const CreateDeviceForm = ({ deviceTypes, onClose, onDeviceCreated }) => {
                                 ref={fileInputRef}
                                 onChange={handleImageChange}
                                 accept="image/*"
-                                style={{ display: 'none' }}
                                 required
+                                style={{ display: 'none' }}
                             />
                             <button 
                                 type="button" 

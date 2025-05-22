@@ -8,7 +8,11 @@ namespace BackendDataAccess.Repositories
     {
         public override async Task<IEnumerable<Device>> GetAllAsync()
         {
-            return await _context.Devices.Include(d => d.DeviceType).ToListAsync();
+            return await _context.Devices
+                .Include(d => d.DeviceType)
+                .Include(d => d.Characteristics)
+                    .ThenInclude(c => c.PossibleCharacteristic)
+                .ToListAsync();
         }
 
         public override async Task<Device?> GetByIdAsync(int id)

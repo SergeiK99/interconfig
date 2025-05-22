@@ -57,8 +57,11 @@
    ```bash
    dotnet ef database update
    ```
+5. ИИ-консультант:
+   Необходимо установить сертификаты для работы GigaChat:
+   https://www.gosuslugi.ru/crt
 
-5. Запустите приложение:
+6. Запустите приложение:
    ```bash
    dotnet run
    ```
@@ -82,9 +85,3 @@
 - Backend: ASP.NET Core, Entity Framework Core
 - База данных: PostgreSQL
 - Аутентификация: JWT
-
-## Разработка
-Для внесения изменений в проект:
-1. Создайте новую ветку
-2. Внесите изменения
-3. Создайте pull request

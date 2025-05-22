@@ -13,23 +13,33 @@ namespace backend.DTOs
     {
         public int Id { get; set; }
 
-        [Required]
-        public string Name { get; set; }
+        [Required(ErrorMessage = "Название обязательно")]
+        public string Name { get; set; } = string.Empty;
 
-        public string Description { get; set; }
+        [Required(ErrorMessage = "Описание обязательно")]
+        public string Description { get; set; } = string.Empty;
 
         public string? ImagePath { get; set; }
 
+        [Required(ErrorMessage = "Потребление энергии обязательно")]
+        [Range(0, int.MaxValue, ErrorMessage = "Потребление энергии не может быть отрицательным")]
         public int PowerConsumption { get; set; }
 
+        [Required(ErrorMessage = "Уровень шума обязателен")]
+        [Range(0, int.MaxValue, ErrorMessage = "Уровень шума не может быть отрицательным")]
         public int NoiseLevel { get; set; }
 
-        [Required]
+        [Required(ErrorMessage = "Максимальный воздушный поток обязателен")]
+        [Range(0, int.MaxValue, ErrorMessage = "Максимальный воздушный поток не может быть отрицательным")]
         public int MaxAirflow { get; set; }
 
-        [Range(1, int.MaxValue)]
+        [Required(ErrorMessage = "Цена обязательна")]
+        [Range(1, int.MaxValue, ErrorMessage = "Цена должна быть больше 0")]
         public int Price { get; set; }
 
+        [Required(ErrorMessage = "Тип устройства обязателен")]
         public int DeviceTypeId { get; set; }
+
+        public List<CharacteristicCreateDto>? Characteristics { get; set; } = new List<CharacteristicCreateDto>();
     }
 }

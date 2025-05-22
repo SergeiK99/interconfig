@@ -78,12 +78,19 @@ namespace backend.Services
 
                 // Формируем информацию об устройствах для ИИ
                 var devicesInfo = string.Join("\n", devicesList.Select(d =>
-                    $"Устройство: {d.Name}, " +
-                    $"Описание: {d.Description}, " +
-                    $"Макс. расход воздуха: {d.MaxAirflow} м³/ч, " +
-                    $"Потребляемая мощность: {d.PowerConsumption} Вт, " +
-                    $"Уровень шума: {d.NoiseLevel} дБ, " +
-                    $"Цена: {d.Price} руб."));
+                {
+                    var characteristicsInfo = d.Characteristics != null && d.Characteristics.Any()
+                        ? ", Характеристики: " + string.Join(", ", d.Characteristics.Select(c => $"{c.PossibleCharacteristic.Name}: {c.Value} {c.PossibleCharacteristic.Unit}"))
+                        : "";
+
+                    return $"Устройство: {d.Name}, " +
+                           $"Описание: {d.Description}, " +
+                           $"Макс. расход воздуха: {d.MaxAirflow} м³/ч, " +
+                           $"Потребляемая мощность: {d.PowerConsumption} Вт, " +
+                           $"Уровень шума: {d.NoiseLevel} дБ, " +
+                           $"Цена: {d.Price} руб." +
+                           characteristicsInfo;
+                }));
 
                 var accessToken = await GetAccessTokenAsync();
 

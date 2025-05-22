@@ -10,6 +10,10 @@ import AIConsultantPage from './components/pages/AIConsultantPage';
 import CartPage from './pages/CartPage';
 import CheckoutPage from './pages/CheckoutPage';
 import OrdersPage from './pages/OrdersPage';
+import RoomTypesPage from './pages/admin/RoomTypesPage';
+import DeviceTypesPage from './pages/admin/DeviceTypesPage';
+import PossibleCharacteristicsPage from './pages/admin/PossibleCharacteristicsPage';
+import ProtectedAdminRoute from './components/ProtectedAdminRoute';
 
 function App() {
   return (
@@ -25,6 +29,22 @@ function App() {
               <Route path="/cart" element={<CartPage />} />
               <Route path="/checkout" element={<CheckoutPage />} />
               <Route path="/orders" element={<OrdersPage />} />
+              {/* Admin routes */}
+              <Route path="/admin/roomtypes" element={
+                <ProtectedAdminRoute>
+                  <RoomTypesPage />
+                </ProtectedAdminRoute>
+              } />
+              <Route path="/admin/devicetypes" element={
+                <ProtectedAdminRoute>
+                  <DeviceTypesPage />
+                </ProtectedAdminRoute>
+              } />
+              <Route path="/admin/possiblecharacteristics" element={
+                <ProtectedAdminRoute>
+                  <PossibleCharacteristicsPage />
+                </ProtectedAdminRoute>
+              } />
             </Routes>
           </div>
         </Router>

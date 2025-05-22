@@ -10,6 +10,18 @@ namespace BackendDataAccess.Configurations
         public void Configure(EntityTypeBuilder<DeviceType> builder)
         {
             builder.HasKey(x => x.Id);
+
+            builder.Property(x => x.Name)
+                .IsRequired()
+                .HasMaxLength(100);
+
+            builder.Property(x => x.Description)
+                .HasMaxLength(500);
+
+            builder.HasMany(x => x.PossibleCharacteristics)
+                .WithOne(x => x.DeviceType)
+                .HasForeignKey(x => x.DeviceTypeId)
+                .OnDelete(DeleteBehavior.Cascade);
         }
     }
 }

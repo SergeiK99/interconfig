@@ -2,6 +2,10 @@
 using BackendDataAccess.Repositories.IRepositories;
 using BackendModels;
 using Microsoft.AspNetCore.Http;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
 
 namespace backend.Services
 {
@@ -9,11 +13,13 @@ namespace backend.Services
     {
         private readonly IDeviceRepository _deviceRepository;
         private readonly ImageService _imageService;
+        private readonly DeviceMappingService _mappingService;
 
-        public UpdateDeviceService(IDeviceRepository deviceRepository, ImageService imageService)
+        public UpdateDeviceService(IDeviceRepository deviceRepository, ImageService imageService, DeviceMappingService mappingService)
         {
             _deviceRepository = deviceRepository;
             _imageService = imageService;
+            _mappingService = mappingService;
         }
 
         public async Task<Device> UpdateDeviceAsync(int id, DeviceDto deviceDto, IFormFile? image)
@@ -21,16 +27,16 @@ namespace backend.Services
             var existingDevice = await _deviceRepository.GetByIdAsync(id);
             if (existingDevice == null)
             {
-                throw new ArgumentException($"РЈСЃС‚СЂРѕР№СЃС‚РІРѕ СЃ ID {id} РЅРµ РЅР°Р№РґРµРЅРѕ");
+                throw new ArgumentException($"Устройство с ID {id} не найдено");
             }
 
             var ventilationType = await _deviceRepository.GetDeviceTypeByIdAsync(deviceDto.DeviceTypeId);
             if (ventilationType == null)
             {
-                throw new ArgumentException("РЈРєР°Р·Р°РЅРЅС‹Р№ С‚РёРї РІРµРЅС‚РёР»СЏС†РёРё РЅРµ РЅР°Р№РґРµРЅ");
+                throw new ArgumentException("Указанный тип вентиляции не найден");
             }
 
-            // Р•СЃР»Рё РїСЂРµРґРѕСЃС‚Р°РІР»РµРЅРѕ РЅРѕРІРѕРµ РёР·РѕР±СЂР°Р¶РµРЅРёРµ, СѓРґР°Р»СЏРµРј СЃС‚Р°СЂРѕРµ Рё СЃРѕС…СЂР°РЅСЏРµРј РЅРѕРІРѕРµ
+            // Обработка изображения
             if (image != null && image.Length > 0)
             {
                 if (!string.IsNullOrEmpty(existingDevice.ImagePath))
@@ -41,11 +47,10 @@ namespace backend.Services
             }
             else
             {
-                // Р•СЃР»Рё РЅРѕРІРѕРµ РёР·РѕР±СЂР°Р¶РµРЅРёРµ РЅРµ РїСЂРµРґРѕСЃС‚Р°РІР»РµРЅРѕ, СЃРѕС…СЂР°РЅСЏРµРј СЃСѓС‰РµСЃС‚РІСѓСЋС‰РёР№ РїСѓС‚СЊ
                 deviceDto.ImagePath = existingDevice.ImagePath;
             }
 
-            // РћР±РЅРѕРІР»СЏРµРј РґР°РЅРЅС‹Рµ СЃСѓС‰РµСЃС‚РІСѓСЋС‰РµРіРѕ СѓСЃС‚СЂРѕР№СЃС‚РІР°
+            // Обновляем основные данные устройства
             existingDevice.Name = deviceDto.Name;
             existingDevice.Description = deviceDto.Description;
             existingDevice.ImagePath = deviceDto.ImagePath;
@@ -56,8 +61,52 @@ namespace backend.Services
             existingDevice.DeviceTypeId = deviceDto.DeviceTypeId;
             existingDevice.DeviceType = ventilationType;
 
-            await _deviceRepository.UpdateAsync(existingDevice);
-            return existingDevice;
+            // Обновляем характеристики
+            if (deviceDto.Characteristics == null)
+                deviceDto.Characteristics = new List<CharacteristicCreateDto>();
+            foreach (var c in deviceDto.Characteristics)
+            {
+                if (string.IsNullOrEmpty(c.Value))
+                    throw new ArgumentException("Все характеристики должны иметь значения");
+            }
+
+            // Удаляем отсутствующие
+            var toDelete = existingDevice.Characteristics
+                .Where(c => !deviceDto.Characteristics.Any(dto => dto.PossibleCharacteristicId == c.PossibleCharacteristicId))
+                .ToList();
+            foreach (var c in toDelete)
+                existingDevice.Characteristics.Remove(c);
+
+            // Обновляем/добавляем
+            foreach (var charDto in deviceDto.Characteristics)
+            {
+                var existingChar = existingDevice.Characteristics
+                    .FirstOrDefault(c => c.PossibleCharacteristicId == charDto.PossibleCharacteristicId);
+
+                if (existingChar != null)
+                    existingChar.Value = charDto.Value;
+                else
+                    existingDevice.Characteristics.Add(new Characteristic
+                    {
+                        PossibleCharacteristicId = charDto.PossibleCharacteristicId,
+                        Value = charDto.Value
+                    });
+            }
+
+            try
+            {
+                await _deviceRepository.UpdateAsync(existingDevice);
+                return existingDevice;
+            }
+            catch (Exception ex)
+            {
+                // Если произошла ошибка и мы сохранили новое изображение, удаляем его
+                if (image != null && !string.IsNullOrEmpty(deviceDto.ImagePath))
+                {
+                    _imageService.DeleteImage(deviceDto.ImagePath);
+                }
+                throw new Exception($"Ошибка при обновлении устройства: {ex.Message}", ex);
+            }
         }
     }
 } 

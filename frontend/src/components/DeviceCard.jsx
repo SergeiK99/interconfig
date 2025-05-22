@@ -114,6 +114,17 @@ const DeviceCard = ({ device, deviceTypes, onDeviceUpdated, onDeviceDeleted, isA
                                     <p><strong>Максимальный воздушный поток:</strong> {device.maxAirflow} м³/ч</p>
                                     <p><strong>Цена:</strong> {device.price} ₽</p>
                                 </div>
+
+                                {/* Отображение дополнительных характеристик */}
+                                {device.characteristics && device.characteristics.length > 0 && (
+                                    <div className="characteristics-group">
+                                        <h4>Характеристики:</h4>
+                                        {device.characteristics.map(char => (
+                                            <p key={char.id}><strong>{char.possibleCharacteristic?.name}{char.possibleCharacteristic?.unit ? ` (${char.possibleCharacteristic.unit})` : ''}:</strong> {char.value}</p>
+                                        ))}
+                                    </div>
+                                )}
+
                                 <div className="description-group">
                                     <h4>Описание:</h4>
                                     <p>{device.description}</p>

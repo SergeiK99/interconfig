@@ -11,3 +11,13 @@ export const fetchDeviceTypes = async () => {
         throw error;
     }
 };
+
+export const fetchPossibleCharacteristicsByDeviceTypeId = async (deviceTypeId) => {
+    try {
+        const response = await axios.get(`${API_BASE_URL}/PossibleCharacteristics?deviceTypeId=${deviceTypeId}`);
+        return response.data;
+    } catch (error) {
+        console.error(`Error fetching possible characteristics for device type ${deviceTypeId}:`, error);
+        throw error;
+    }
+};

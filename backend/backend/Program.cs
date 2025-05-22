@@ -58,6 +58,7 @@ namespace backend
                 options.MultipartHeadersLengthLimit = int.MaxValue;
             });
 
+            // Register repositories with their loggers
             builder.Services.AddScoped<IDeviceRepository, DeviceRepository>();
             builder.Services.AddScoped<AddDeviceService>();
             builder.Services.AddScoped<UpdateDeviceService>();
@@ -72,6 +73,11 @@ namespace backend
                     sp.GetRequiredService<IConfiguration>(),
                     sp.GetRequiredService<IDeviceRepository>()
                 ));
+            builder.Services.AddScoped<IRoomTypeRepository, RoomTypeRepository>();
+            builder.Services.AddScoped<IPossibleCharacteristicRepository, PossibleCharacteristicRepository>();
+            builder.Services.AddScoped<RoomTypeService>();
+            builder.Services.AddScoped<PossibleCharacteristicService>();
+            builder.Services.AddScoped<DeviceMappingService>();
 
             builder.Services.AddDbContext<ApplicationDbContext>(
                 options =>

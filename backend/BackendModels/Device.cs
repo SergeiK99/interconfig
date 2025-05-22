@@ -28,5 +28,6 @@ namespace BackendModels
         public int DeviceTypeId { get; set; }
         [ForeignKey("DeviceTypeId")]
         public required DeviceType DeviceType { get; set; }
+        public ICollection<Characteristic>? Characteristics { get; set; }
     }
 }

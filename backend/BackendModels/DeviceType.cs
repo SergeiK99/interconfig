@@ -15,4 +15,6 @@ public class DeviceType
     
     [StringLength(500)]
     public string? Description { get; set; }
+
+    public ICollection<PossibleCharacteristic> PossibleCharacteristics { get; set; }
 }

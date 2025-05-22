@@ -33,6 +33,22 @@ const Navigation = () => {
           <li><Link to="/catalog">Каталог устройств</Link></li>
         </ul>
         
+        {/* Меню справочников для админа */}
+        {user && user.role === 'Admin' && (
+          <ul className="nav-links">
+            <li className="dropdown">
+              <button className="dropbtn">Справочники</button>
+              <div className="dropdown-content">
+                <Link to="/admin/roomtypes">Типы помещений</Link>
+                <Link to="/admin/devicetypes">Типы устройств</Link>
+                <Link to="/admin/possiblecharacteristics">Возможные характеристики</Link>
+                {/* Ссылку на характеристики устройств, возможно, лучше сделать в рамках редактирования устройства */}
+                {/* <Link to="/admin/characteristics">Характеристики</Link> */}
+              </div>
+            </li>
+          </ul>
+        )}
+
         <div className="auth-buttons">
           {user ? (
             <>
