@@ -17,7 +17,11 @@ namespace BackendDataAccess.Repositories
 
         public override async Task<Device?> GetByIdAsync(int id)
         {
-            return await _context.Devices.Include(d => d.DeviceType).FirstOrDefaultAsync(d => d.Id == id);
+            return await _context.Devices
+                .Include(d => d.DeviceType)
+                .Include(d => d.Characteristics)
+                    .ThenInclude(c => c.PossibleCharacteristic)
+                .FirstOrDefaultAsync(d => d.Id == id);
         }
 
         public async Task<DeviceType?> GetDeviceTypeByIdAsync(int id)

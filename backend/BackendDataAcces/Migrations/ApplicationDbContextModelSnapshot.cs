@@ -43,7 +43,7 @@ namespace BackendDataAccess.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("Carts");
+                    b.ToTable("Carts", (string)null);
                 });
 
             modelBuilder.Entity("BackendModels.CartItem", b =>
@@ -75,7 +75,7 @@ namespace BackendDataAccess.Migrations
 
                     b.HasIndex("DeviceId");
 
-                    b.ToTable("CartItems");
+                    b.ToTable("CartItems", (string)null);
                 });
 
             modelBuilder.Entity("BackendModels.Characteristic", b =>
@@ -102,7 +102,7 @@ namespace BackendDataAccess.Migrations
 
                     b.HasIndex("PossibleCharacteristicId");
 
-                    b.ToTable("Characteristics");
+                    b.ToTable("Characteristics", (string)null);
                 });
 
             modelBuilder.Entity("BackendModels.Device", b =>
@@ -144,7 +144,7 @@ namespace BackendDataAccess.Migrations
 
                     b.HasIndex("DeviceTypeId");
 
-                    b.ToTable("Devices");
+                    b.ToTable("Devices", (string)null);
                 });
 
             modelBuilder.Entity("BackendModels.DeviceType", b =>
@@ -166,7 +166,7 @@ namespace BackendDataAccess.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("DeviceTypes");
+                    b.ToTable("DeviceTypes", (string)null);
                 });
 
             modelBuilder.Entity("BackendModels.Order", b =>
@@ -208,7 +208,7 @@ namespace BackendDataAccess.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("Orders");
+                    b.ToTable("Orders", (string)null);
                 });
 
             modelBuilder.Entity("BackendModels.OrderItem", b =>
@@ -240,7 +240,7 @@ namespace BackendDataAccess.Migrations
 
                     b.HasIndex("OrderId");
 
-                    b.ToTable("OrderItems");
+                    b.ToTable("OrderItems", (string)null);
                 });
 
             modelBuilder.Entity("BackendModels.PossibleCharacteristic", b =>
@@ -275,7 +275,7 @@ namespace BackendDataAccess.Migrations
 
                     b.HasIndex("DeviceTypeId");
 
-                    b.ToTable("PossibleCharacteristics");
+                    b.ToTable("PossibleCharacteristics", (string)null);
                 });
 
             modelBuilder.Entity("BackendModels.RoomType", b =>
@@ -298,7 +298,7 @@ namespace BackendDataAccess.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("RoomTypes");
+                    b.ToTable("RoomTypes", (string)null);
                 });
 
             modelBuilder.Entity("BackendModels.User", b =>
@@ -329,7 +329,7 @@ namespace BackendDataAccess.Migrations
                     b.HasIndex("Email")
                         .IsUnique();
 
-                    b.ToTable("Users");
+                    b.ToTable("Users", (string)null);
                 });
 
             modelBuilder.Entity("BackendModels.Cart", b =>

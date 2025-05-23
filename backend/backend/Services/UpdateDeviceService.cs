@@ -64,33 +64,26 @@ namespace backend.Services
             // Обновляем характеристики
             if (deviceDto.Characteristics == null)
                 deviceDto.Characteristics = new List<CharacteristicCreateDto>();
+
+            // Проверяем все характеристики на наличие значений
             foreach (var c in deviceDto.Characteristics)
             {
                 if (string.IsNullOrEmpty(c.Value))
                     throw new ArgumentException("Все характеристики должны иметь значения");
             }
 
-            // Удаляем отсутствующие
-            var toDelete = existingDevice.Characteristics
-                .Where(c => !deviceDto.Characteristics.Any(dto => dto.PossibleCharacteristicId == c.PossibleCharacteristicId))
-                .ToList();
-            foreach (var c in toDelete)
-                existingDevice.Characteristics.Remove(c);
+            // Очищаем существующие характеристики
+            existingDevice.Characteristics?.Clear();
 
-            // Обновляем/добавляем
+            // Добавляем новые характеристики
             foreach (var charDto in deviceDto.Characteristics)
             {
-                var existingChar = existingDevice.Characteristics
-                    .FirstOrDefault(c => c.PossibleCharacteristicId == charDto.PossibleCharacteristicId);
-
-                if (existingChar != null)
-                    existingChar.Value = charDto.Value;
-                else
-                    existingDevice.Characteristics.Add(new Characteristic
-                    {
-                        PossibleCharacteristicId = charDto.PossibleCharacteristicId,
-                        Value = charDto.Value
-                    });
+                existingDevice.Characteristics.Add(new Characteristic
+                {
+                    PossibleCharacteristicId = charDto.PossibleCharacteristicId,
+                    Value = charDto.Value,
+                    Device = existingDevice
+                });
             }
 
             try

@@ -62,6 +62,7 @@ namespace backend.Controllers
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
 
+            // --- Универсальный парсинг характеристик ---
             if (Request.Form.TryGetValue("characteristics", out var characteristicsJson))
             {
                 try
@@ -73,6 +74,29 @@ namespace backend.Controllers
                     return BadRequest($"Некорректный формат JSON для характеристик: {ex.Message}");
                 }
             }
+            else
+            {
+                // Fallback: если пришли пары possibleCharacteristicId и value
+                var possibleCharacteristicIds = Request.Form["possibleCharacteristicId"];
+                var values = Request.Form["value"];
+                if (possibleCharacteristicIds.Count > 0 && values.Count > 0 && possibleCharacteristicIds.Count == values.Count)
+                {
+                    deviceDto.Characteristics = new List<CharacteristicCreateDto>();
+                    for (int i = 0; i < possibleCharacteristicIds.Count; i++)
+                    {
+                        if (int.TryParse(possibleCharacteristicIds[i], out int pcId))
+                        {
+                            deviceDto.Characteristics.Add(new CharacteristicCreateDto
+                            {
+                                PossibleCharacteristicId = pcId,
+                                Value = values[i]
+                            });
+                        }
+                    }
+                }
+            }
+            // --- конец универсального парсинга ---
+
             if (deviceDto.Characteristics == null)
                 deviceDto.Characteristics = new List<CharacteristicCreateDto>();
             foreach (var c in deviceDto.Characteristics)
@@ -125,6 +149,7 @@ namespace backend.Controllers
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
 
+            // --- Универсальный парсинг характеристик ---
             if (Request.Form.TryGetValue("characteristics", out var characteristicsJson))
             {
                 try
@@ -136,6 +161,29 @@ namespace backend.Controllers
                     return BadRequest($"Некорректный формат JSON для характеристик: {ex.Message}");
                 }
             }
+            else
+            {
+                // Fallback: если пришли пары possibleCharacteristicId и value
+                var possibleCharacteristicIds = Request.Form["possibleCharacteristicId"];
+                var values = Request.Form["value"];
+                if (possibleCharacteristicIds.Count > 0 && values.Count > 0 && possibleCharacteristicIds.Count == values.Count)
+                {
+                    deviceDto.Characteristics = new List<CharacteristicCreateDto>();
+                    for (int i = 0; i < possibleCharacteristicIds.Count; i++)
+                    {
+                        if (int.TryParse(possibleCharacteristicIds[i], out int pcId))
+                        {
+                            deviceDto.Characteristics.Add(new CharacteristicCreateDto
+                            {
+                                PossibleCharacteristicId = pcId,
+                                Value = values[i]
+                            });
+                        }
+                    }
+                }
+            }
+            // --- конец универсального парсинга ---
+
             if (deviceDto.Characteristics == null)
                 deviceDto.Characteristics = new List<CharacteristicCreateDto>();
             foreach (var c in deviceDto.Characteristics)

@@ -97,11 +97,8 @@ const CreateDeviceForm = ({ deviceTypes, onClose, onDeviceCreated }) => {
                         : String(deviceCharacteristics[pc.id])
                 }));
 
-            // Новый способ: добавляем каждую характеристику как отдельные поля массива
-            characteristicsArray.forEach((c, i) => {
-                formData.append(`characteristics[${i}].possibleCharacteristicId`, c.possibleCharacteristicId);
-                formData.append(`characteristics[${i}].value`, c.value);
-            });
+            // Новый способ: отправляем все характеристики одной JSON-строкой
+            formData.append('characteristics', JSON.stringify(characteristicsArray));
 
             const createdDevice = await createDevice(formData);
             
