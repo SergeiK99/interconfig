@@ -5,13 +5,13 @@ import { fetchPossibleCharacteristicsByDeviceTypeId } from '../services/DeviceTy
 
 const CreateDeviceForm = ({ deviceTypes, onClose, onDeviceCreated }) => {
     const [newDevice, setNewDevice] = useState({
-        name: '',
-        description: '',
-        powerConsumption: '',
-        noiseLevel: '',
-        maxAirflow: '',
-        price: '',
-        deviceTypeId: ''
+        Name: '',
+        Description: '',
+        PowerConsumption: '',
+        NoiseLevel: '',
+        MaxAirflow: '',
+        Price: '',
+        DeviceTypeId: ''
     });
     const [imagePreview, setImagePreview] = useState(null);
     const [selectedImage, setSelectedImage] = useState(null);
@@ -20,8 +20,8 @@ const CreateDeviceForm = ({ deviceTypes, onClose, onDeviceCreated }) => {
     const [deviceCharacteristics, setDeviceCharacteristics] = useState({}); // { possibleCharacteristicId: value }
 
     useEffect(() => {
-        if (newDevice.deviceTypeId) {
-            fetchPossibleCharacteristicsByDeviceTypeId(newDevice.deviceTypeId)
+        if (newDevice.DeviceTypeId) {
+            fetchPossibleCharacteristicsByDeviceTypeId(newDevice.DeviceTypeId)
                 .then(data => {
                     setPossibleCharacteristics(data);
                     const initialCharacteristics = {};
@@ -43,16 +43,16 @@ const CreateDeviceForm = ({ deviceTypes, onClose, onDeviceCreated }) => {
             setPossibleCharacteristics([]);
             setDeviceCharacteristics({});
         }
-    }, [newDevice.deviceTypeId]);
+    }, [newDevice.DeviceTypeId]);
 
     const handleCreateDevice = async (e) => {
         e.preventDefault();
         
         // Валидация числовых полей
-        if (newDevice.powerConsumption < 0 || 
-            newDevice.noiseLevel < 0 || 
-            newDevice.maxAirflow < 0 || 
-            newDevice.price < 0) {
+        if (newDevice.PowerConsumption < 0 || 
+            newDevice.NoiseLevel < 0 || 
+            newDevice.MaxAirflow < 0 || 
+            newDevice.Price < 0) {
             alert('Числовые значения не могут быть отрицательными');
             return;
         }
@@ -70,21 +70,26 @@ const CreateDeviceForm = ({ deviceTypes, onClose, onDeviceCreated }) => {
             const formData = new FormData();
             
             // Добавляем все основные поля устройства в FormData
-            formData.append('Name', newDevice.name);
-            formData.append('Description', newDevice.description);
-            formData.append('PowerConsumption', newDevice.powerConsumption);
-            formData.append('NoiseLevel', newDevice.noiseLevel);
-            formData.append('MaxAirflow', newDevice.maxAirflow);
-            formData.append('Price', newDevice.price);
-            formData.append('DeviceTypeId', newDevice.deviceTypeId);
+            formData.append('Name', newDevice.Name);
+            formData.append('Description', newDevice.Description);
+            formData.append('PowerConsumption', newDevice.PowerConsumption);
+            formData.append('NoiseLevel', newDevice.NoiseLevel);
+            formData.append('MaxAirflow', newDevice.MaxAirflow);
+            formData.append('Price', newDevice.Price);
+            formData.append('DeviceTypeId', newDevice.DeviceTypeId);
 
             // Добавляем изображение, если оно было выбрано
             if (selectedImage) {
                 formData.append('image', selectedImage);
             }
 
+            // Для отладки:
+            console.log('DeviceTypeId:', newDevice.DeviceTypeId);
+            console.log('possibleCharacteristics:', possibleCharacteristics);
+            console.log('deviceCharacteristics:', deviceCharacteristics);
             // Сборка характеристик для отправки:
             const characteristicsArray = possibleCharacteristics
+                .filter(pc => pc.id > 0)
                 .filter(pc => {
                     if (pc.type === 'bool') return true; // всегда отправляем для bool
                     const val = deviceCharacteristics[pc.id];
@@ -96,6 +101,7 @@ const CreateDeviceForm = ({ deviceTypes, onClose, onDeviceCreated }) => {
                         ? (!!deviceCharacteristics[pc.id] ? 'true' : 'false')
                         : String(deviceCharacteristics[pc.id])
                 }));
+            console.log('characteristicsArray:', characteristicsArray);
 
             // Новый способ: отправляем все характеристики одной JSON-строкой
             formData.append('characteristics', JSON.stringify(characteristicsArray));
@@ -151,8 +157,8 @@ const CreateDeviceForm = ({ deviceTypes, onClose, onDeviceCreated }) => {
                         <label>Название:</label>
                         <input
                             type="text"
-                            name="name"
-                            value={newDevice.name}
+                            name="Name"
+                            value={newDevice.Name}
                             onChange={handleInputChange}
                             required
                         />
@@ -160,8 +166,8 @@ const CreateDeviceForm = ({ deviceTypes, onClose, onDeviceCreated }) => {
                     <div className="form-group">
                         <label>Описание:</label>
                         <textarea
-                            name="description"
-                            value={newDevice.description}
+                            name="Description"
+                            value={newDevice.Description}
                             onChange={handleInputChange}
                             required
                         />
@@ -169,8 +175,8 @@ const CreateDeviceForm = ({ deviceTypes, onClose, onDeviceCreated }) => {
                     <div className="form-group">
                         <label>Тип устройства:</label>
                         <select
-                            name="deviceTypeId"
-                            value={newDevice.deviceTypeId}
+                            name="DeviceTypeId"
+                            value={newDevice.DeviceTypeId}
                             onChange={handleInputChange}
                             required
                         >
@@ -186,8 +192,8 @@ const CreateDeviceForm = ({ deviceTypes, onClose, onDeviceCreated }) => {
                         <label>Потребление энергии (Вт):</label>
                         <input
                             type="number"
-                            name="powerConsumption"
-                            value={newDevice.powerConsumption}
+                            name="PowerConsumption"
+                            value={newDevice.PowerConsumption}
                             onChange={handleInputChange}
                             min="0"
                             required
@@ -197,8 +203,8 @@ const CreateDeviceForm = ({ deviceTypes, onClose, onDeviceCreated }) => {
                         <label>Уровень шума (дБ):</label>
                         <input
                             type="number"
-                            name="noiseLevel"
-                            value={newDevice.noiseLevel}
+                            name="NoiseLevel"
+                            value={newDevice.NoiseLevel}
                             onChange={handleInputChange}
                             min="0"
                             required
@@ -208,8 +214,8 @@ const CreateDeviceForm = ({ deviceTypes, onClose, onDeviceCreated }) => {
                         <label>Максимальный воздушный поток (м³/ч):</label>
                         <input
                             type="number"
-                            name="maxAirflow"
-                            value={newDevice.maxAirflow}
+                            name="MaxAirflow"
+                            value={newDevice.MaxAirflow}
                             onChange={handleInputChange}
                             min="0"
                             required
@@ -219,8 +225,8 @@ const CreateDeviceForm = ({ deviceTypes, onClose, onDeviceCreated }) => {
                         <label>Цена (₽):</label>
                         <input
                             type="number"
-                            name="price"
-                            value={newDevice.price}
+                            name="Price"
+                            value={newDevice.Price}
                             onChange={handleInputChange}
                             min="0"
                             required

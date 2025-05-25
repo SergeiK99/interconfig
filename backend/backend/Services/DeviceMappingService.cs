@@ -9,7 +9,7 @@ namespace backend.Services
     {
         public Device MapToModel(DeviceDto deviceDto, DeviceType deviceType)
         {
-            return new Device
+            var device = new Device
             {
                 Name = deviceDto.Name,
                 Description = deviceDto.Description,
@@ -26,6 +26,17 @@ namespace backend.Services
                     Value = c.Value ?? string.Empty
                 }).ToList() ?? new List<Characteristic>()
             };
+
+            // Устанавливаем связь с устройством для каждой характеристики
+            if (device.Characteristics != null)
+            {
+                foreach (var c in device.Characteristics)
+                {
+                    c.Device = device;
+                }
+            }
+
+            return device;
         }
 
         public DeviceDetailsDto MapToDetailsDto(Device device)

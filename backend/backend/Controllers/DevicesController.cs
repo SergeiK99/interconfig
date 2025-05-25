@@ -67,7 +67,10 @@ namespace backend.Controllers
             {
                 try
                 {
-                    deviceDto.Characteristics = JsonSerializer.Deserialize<List<CharacteristicCreateDto>>(characteristicsJson);
+                    deviceDto.Characteristics = JsonSerializer.Deserialize<List<CharacteristicCreateDto>>(
+                        characteristicsJson,
+                        new JsonSerializerOptions { PropertyNameCaseInsensitive = true }
+                    );
                 }
                 catch (JsonException ex)
                 {
@@ -99,11 +102,11 @@ namespace backend.Controllers
 
             if (deviceDto.Characteristics == null)
                 deviceDto.Characteristics = new List<CharacteristicCreateDto>();
-            foreach (var c in deviceDto.Characteristics)
-            {
-                if (string.IsNullOrEmpty(c.Value))
-                    return BadRequest("Все характеристики должны иметь значения");
-            }
+            //foreach (var c in deviceDto.Characteristics)
+            //{
+            //    if (string.IsNullOrEmpty(c.Value))
+            //        return BadRequest("Все характеристики должны иметь значения");
+            //}
 
             try
             {
@@ -154,7 +157,10 @@ namespace backend.Controllers
             {
                 try
                 {
-                    deviceDto.Characteristics = JsonSerializer.Deserialize<List<CharacteristicCreateDto>>(characteristicsJson);
+                    deviceDto.Characteristics = JsonSerializer.Deserialize<List<CharacteristicCreateDto>>(
+                        characteristicsJson,
+                        new JsonSerializerOptions { PropertyNameCaseInsensitive = true }
+                    );
                 }
                 catch (JsonException ex)
                 {
