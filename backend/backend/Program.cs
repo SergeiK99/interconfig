@@ -78,6 +78,7 @@ namespace backend
             builder.Services.AddScoped<RoomTypeService>();
             builder.Services.AddScoped<PossibleCharacteristicService>();
             builder.Services.AddScoped<DeviceMappingService>();
+            builder.Services.AddScoped<DeviceConfiguratorService>();
 
             builder.Services.AddDbContext<ApplicationDbContext>(
                 options =>

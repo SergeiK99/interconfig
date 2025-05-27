@@ -116,12 +116,16 @@ const DeviceCard = ({ device, deviceTypes, onDeviceUpdated, onDeviceDeleted, isA
                                 </div>
 
                                 {/* Отображение дополнительных характеристик */}
-                                {device.characteristics && device.characteristics.length > 0 && (
+                                {device.characteristics && device.characteristics.filter(char => (char.possibleCharacteristic?.name || char.name)).length > 0 && (
                                     <div className="characteristics-group">
                                         <h4>Характеристики:</h4>
-                                        {device.characteristics.map(char => (
-                                            <p key={char.id}><strong>{char.possibleCharacteristic?.name}{char.possibleCharacteristic?.unit ? ` (${char.possibleCharacteristic.unit})` : ''}:</strong> {char.value}</p>
-                                        ))}
+                                        {device.characteristics
+                                            .filter(char => (char.possibleCharacteristic?.name || char.name))
+                                            .map(char => (
+                                                <p key={char.id}>
+                                                    <strong>{char.possibleCharacteristic?.name || char.name}{char.possibleCharacteristic?.unit ? ` (${char.possibleCharacteristic.unit})` : ''}:</strong> {char.value}
+                                                </p>
+                                            ))}
                                     </div>
                                 )}
 

@@ -63,3 +63,25 @@ export const deleteDevice = async (id) => {
         throw error;
     }
 };
+
+export const fetchBestDevice = async (deviceTypeId, roomTypeId, roomSize, peopleCount, characteristics) => {
+    try {
+        const body = {
+            deviceTypeId,
+            roomTypeId,
+            roomSize,
+            peopleCount,
+            characteristics: characteristics || []
+        };
+        const response = await axios.post(`${API_BASE_URL}/Devices/suitable`, body, {
+            headers: getAuthHeaders()
+        });
+        return response.data;
+    } catch (error) {
+        if (error.response && error.response.status === 404) {
+            return null;
+        }
+        console.error('Error fetching best device:', error);
+        throw error;
+    }
+};

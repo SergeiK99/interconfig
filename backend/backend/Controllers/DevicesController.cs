@@ -21,19 +21,22 @@ namespace backend.Controllers
         private readonly UpdateDeviceService _updateDeviceService;
         private readonly ImageService _imageService;
         private readonly DeviceMappingService _mappingService;
+        private readonly DeviceConfiguratorService _configuratorService;
 
         public DevicesController(
             IDeviceRepository deviceRepo, 
             AddDeviceService addDeviceService,
             UpdateDeviceService updateDeviceService,
             ImageService imageService,
-            DeviceMappingService mappingService)
+            DeviceMappingService mappingService,
+            DeviceConfiguratorService configuratorService)
         {
             _deviceRepo = deviceRepo;
             _addDeviceService = addDeviceService;
             _updateDeviceService = updateDeviceService;
             _imageService = imageService;
             _mappingService = mappingService;
+            _configuratorService = configuratorService;
         }
 
         [HttpGet]
@@ -102,12 +105,6 @@ namespace backend.Controllers
 
             if (deviceDto.Characteristics == null)
                 deviceDto.Characteristics = new List<CharacteristicCreateDto>();
-            //foreach (var c in deviceDto.Characteristics)
-            //{
-            //    if (string.IsNullOrEmpty(c.Value))
-            //        return BadRequest("Все характеристики должны иметь значения");
-            //}
-
             try
             {
                 var device = await _addDeviceService.AddDeviceAsync(deviceDto, image);
@@ -203,6 +200,35 @@ namespace backend.Controllers
                 var updatedDevice = await _updateDeviceService.UpdateDeviceAsync(id, deviceDto, image);
                 var result = _mappingService.MapToDetailsDto(updatedDevice);
                 return Ok(result);
+            }
+            catch (ArgumentException ex)
+            {
+                return BadRequest(ex.Message);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, $"Внутренняя ошибка сервера: {ex.Message}");
+            }
+        }
+
+        [HttpPost("suitable")]
+        public async Task<IActionResult> GetSuitableDevicePost([FromBody] DeviceConfigRequest request)
+        {
+            try
+            {
+                var result = await _configuratorService.FindBestDeviceWithReasonAsync(
+                    request.DeviceTypeId,
+                    request.RoomTypeId,
+                    request.RoomSize,
+                    request.PeopleCount,
+                    request.Characteristics?.Select(c => (c.PossibleCharacteristicId, c.Value)).ToList() ?? new List<(int, string)>()
+                );
+                if (result.Device != null)
+                {
+                    var deviceDto = _mappingService.MapToDetailsDto(result.Device);
+                    return Ok(new { device = deviceDto });
+                }
+                return NotFound(new { reason = result.Reason });
             }
             catch (ArgumentException ex)
             {
