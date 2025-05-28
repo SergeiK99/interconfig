@@ -84,6 +84,7 @@ namespace backend.Services
                         : "";
 
                     return $"Устройство: {d.Name}, " +
+                           $"Тип устройства: {d.DeviceType}" +
                            $"Описание: {d.Description}, " +
                            $"Макс. расход воздуха: {d.MaxAirflow} м³/ч, " +
                            $"Потребляемая мощность: {d.PowerConsumption} Вт, " +
