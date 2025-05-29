@@ -1,7 +1,11 @@
-using backend.DTOs;
+﻿using backend.DTOs;
 using BackendDataAccess.Repositories.IRepositories;
 using BackendModels;
 using Microsoft.AspNetCore.Http;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
 
 namespace backend.Services
 {
@@ -9,11 +13,13 @@ namespace backend.Services
     {
         private readonly IDeviceRepository _deviceRepository;
         private readonly ImageService _imageService;
+        private readonly DeviceMappingService _mappingService;
 
-        public UpdateDeviceService(IDeviceRepository deviceRepository, ImageService imageService)
+        public UpdateDeviceService(IDeviceRepository deviceRepository, ImageService imageService, DeviceMappingService mappingService)
         {
             _deviceRepository = deviceRepository;
             _imageService = imageService;
+            _mappingService = mappingService;
         }
 
         public async Task<Device> UpdateDeviceAsync(int id, DeviceDto deviceDto, IFormFile? image)
@@ -24,13 +30,13 @@ namespace backend.Services
                 throw new ArgumentException($"Устройство с ID {id} не найдено");
             }
 
-            var ventilationType = await _deviceRepository.GetVentilationTypeByIdAsync(deviceDto.VentilationTypeId);
+            var ventilationType = await _deviceRepository.GetDeviceTypeByIdAsync(deviceDto.DeviceTypeId);
             if (ventilationType == null)
             {
                 throw new ArgumentException("Указанный тип вентиляции не найден");
             }
 
-            // Если предоставлено новое изображение, удаляем старое и сохраняем новое
+            // Обработка изображения
             if (image != null && image.Length > 0)
             {
                 if (!string.IsNullOrEmpty(existingDevice.ImagePath))
@@ -41,11 +47,10 @@ namespace backend.Services
             }
             else
             {
-                // Если новое изображение не предоставлено, сохраняем существующий путь
                 deviceDto.ImagePath = existingDevice.ImagePath;
             }
 
-            // Обновляем данные существующего устройства
+            // Обновляем основные данные устройства
             existingDevice.Name = deviceDto.Name;
             existingDevice.Description = deviceDto.Description;
             existingDevice.ImagePath = deviceDto.ImagePath;
@@ -53,11 +58,48 @@ namespace backend.Services
             existingDevice.NoiseLevel = deviceDto.NoiseLevel;
             existingDevice.MaxAirflow = deviceDto.MaxAirflow;
             existingDevice.Price = deviceDto.Price;
-            existingDevice.VentilationTypeId = deviceDto.VentilationTypeId;
-            existingDevice.VentilationType = ventilationType;
+            existingDevice.DeviceTypeId = deviceDto.DeviceTypeId;
+            existingDevice.DeviceType = ventilationType;
 
-            await _deviceRepository.UpdateAsync(existingDevice);
-            return existingDevice;
+            // Обновляем характеристики
+            if (deviceDto.Characteristics == null)
+                deviceDto.Characteristics = new List<CharacteristicCreateDto>();
+
+            // Проверяем все характеристики на наличие значений
+            foreach (var c in deviceDto.Characteristics)
+            {
+                if (string.IsNullOrEmpty(c.Value))
+                    throw new ArgumentException("Все характеристики должны иметь значения");
+            }
+
+            // Очищаем существующие характеристики
+            existingDevice.Characteristics?.Clear();
+
+            // Добавляем новые характеристики
+            foreach (var charDto in deviceDto.Characteristics)
+            {
+                existingDevice.Characteristics.Add(new Characteristic
+                {
+                    PossibleCharacteristicId = charDto.PossibleCharacteristicId,
+                    Value = charDto.Value,
+                    Device = existingDevice
+                });
+            }
+
+            try
+            {
+                await _deviceRepository.UpdateAsync(existingDevice);
+                return existingDevice;
+            }
+            catch (Exception ex)
+            {
+                // Если произошла ошибка и мы сохранили новое изображение, удаляем его
+                if (image != null && !string.IsNullOrEmpty(deviceDto.ImagePath))
+                {
+                    _imageService.DeleteImage(deviceDto.ImagePath);
+                }
+                throw new Exception($"Ошибка при обновлении устройства: {ex.Message}", ex);
+            }
         }
     }
 } 

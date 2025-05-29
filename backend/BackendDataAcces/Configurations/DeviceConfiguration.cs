@@ -10,9 +10,9 @@ namespace BackendDataAccess.Configurations
         {
             builder.HasKey(x => x.Id);
             builder
-                .HasOne(x => x.VentilationType)
+                .HasOne(x => x.DeviceType)
                 .WithMany()
-                .HasForeignKey(x => x.VentilationTypeId);
+                .HasForeignKey(x => x.DeviceTypeId);
         }
     }
 }

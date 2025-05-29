@@ -8,17 +8,25 @@ namespace BackendDataAccess.Repositories
     {
         public override async Task<IEnumerable<Device>> GetAllAsync()
         {
-            return await _context.Devices.Include(d => d.VentilationType).ToListAsync();
+            return await _context.Devices
+                .Include(d => d.DeviceType)
+                .Include(d => d.Characteristics)
+                    .ThenInclude(c => c.PossibleCharacteristic)
+                .ToListAsync();
         }
 
         public override async Task<Device?> GetByIdAsync(int id)
         {
-            return await _context.Devices.Include(d => d.VentilationType).FirstOrDefaultAsync(d => d.Id == id);
+            return await _context.Devices
+                .Include(d => d.DeviceType)
+                .Include(d => d.Characteristics)
+                    .ThenInclude(c => c.PossibleCharacteristic)
+                .FirstOrDefaultAsync(d => d.Id == id);
         }
 
-        public async Task<VentilationType?> GetVentilationTypeByIdAsync(int id)
+        public async Task<DeviceType?> GetDeviceTypeByIdAsync(int id)
         {
-            return await _context.VentilationTypes.FindAsync(id);
+            return await _context.DeviceTypes.FindAsync(id);
         }
     }
 }

@@ -15,6 +15,23 @@
     box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
 }
 
+.admin-card {
+    cursor: pointer;
+    position: relative;
+}
+
+.admin-card:hover::after {
+    content: 'Нажмите для редактирования';
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    background-color: rgba(33, 150, 243, 0.8);
+    color: white;
+    padding: 5px 10px;
+    border-radius: 4px;
+    font-size: 12px;
+}
+
 .device-card h2 {
     padding: 15px;
     margin: 0;
@@ -22,13 +39,19 @@
     color: white;
     border-bottom: 1px solid #1976D2;
     font-size: 18px;
+    height: 60px;
+    display: flex;
+    align-items: center;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
 }
 
 .device-image-container {
     position: relative;
     width: 100%;
-    height: 300px;
-    background-color: #f5f5f5;
+    height: 200px;
+    /* background-color: #f5f5f5; */
     display: flex;
     align-items: center;
     justify-content: center;
@@ -51,4 +74,90 @@
     margin: 8px 0;
     font-size: 14px;
     color: #555;
+}
+
+.admin-controls {
+    display: flex;
+    justify-content: flex-end;
+    padding: 10px 15px;
+    background-color: #f5f5f5;
+    border-top: 1px solid #e0e0e0;
+}
+
+.cart-controls {
+    display: flex;
+    justify-content: space-between;
+    padding: 10px 15px;
+    background-color: #f5f5f5;
+    border-top: 1px solid #e0e0e0;
+}
+
+.details-button {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 8px 16px;
+    background-color: #17a2b8;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+.details-button:hover {
+    background-color: #138496;
+}
+
+.add-to-cart-button {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 8px 16px;
+    background-color: #2196F3;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+.add-to-cart-button:hover {
+    background-color: #0b7dda;
+}
+
+.edit-button {
+    background-color: #2196F3;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    padding: 8px 16px;
+    cursor: pointer;
+    font-size: 14px;
+    transition: background-color 0.3s;
+}
+
+.edit-button:hover {
+    background-color: #0b7dda;
+}
+
+.device-full-details p {
+    font-size: 16px;
+    margin-bottom: 12px;
+}
+
+@media (max-width: 768px) {
+    .device-card {
+        width: 100%;
+        margin: 10px 0;
+    }
+    
+    .cart-controls {
+        flex-direction: column;
+        gap: 10px;
+    }
+    
+    .details-button, .add-to-cart-button {
+        width: 100%;
+    }
 } 
