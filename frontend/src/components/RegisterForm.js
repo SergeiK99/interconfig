@@ -1,5 +1,4 @@
 import React, { useState } from 'react';
-import { useAuth } from '../context/AuthContext';
 import { authService } from '../services/authService';
 import '../styles/Auth.css';
 
@@ -8,7 +7,6 @@ const RegisterForm = ({ onClose, onSwitchToLogin }) => {
     const [password, setPassword] = useState('');
     const [confirmPassword, setConfirmPassword] = useState('');
     const [error, setError] = useState('');
-    const { login } = useAuth();
 
     const handleSubmit = async (e) => {
         e.preventDefault();
@@ -20,9 +18,9 @@ const RegisterForm = ({ onClose, onSwitchToLogin }) => {
         }
 
         try {
-            const response = await authService.register(email, password);
-            login(response);
-            onClose();
+            await authService.register(email, password);
+            alert('Регистрация успешна! Теперь войдите.');
+            onSwitchToLogin();
         } catch (err) {
             setError(err.message);
         }

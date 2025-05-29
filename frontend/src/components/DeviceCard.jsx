@@ -3,17 +3,16 @@ import './DeviceCard.css';
 import EditDeviceForm from './EditDeviceForm';
 import { useCart } from '../context/CartContext';
 import { useAuth } from '../context/AuthContext';
-import { useNavigate } from 'react-router-dom';
 import { Button } from 'react-bootstrap';
 import { FaShoppingCart, FaInfoCircle } from 'react-icons/fa';
 import './DeviceDetails.css';
+import DeviceDetailsModal from './DeviceDetailsModal';
 
-const DeviceCard = ({ device, deviceTypes, onDeviceUpdated, onDeviceDeleted, isAdmin }) => {
+const DeviceCard = ({ device, deviceTypes, onDeviceUpdated, onDeviceDeleted, isAdmin, setShowLoginModal, possibleCharacteristics = [] }) => {
     const [showEditForm, setShowEditForm] = useState(false);
     const [showDetailsModal, setShowDetailsModal] = useState(false);
     const { addToCart } = useCart();
     const { user } = useAuth();
-    const navigate = useNavigate();
     const imageUrl = device.imagePath ? `http://localhost:5115${device.imagePath}` : '/placeholder-device.png';
 
     const handleCardClick = () => {
@@ -27,7 +26,7 @@ const DeviceCard = ({ device, deviceTypes, onDeviceUpdated, onDeviceDeleted, isA
     const handleAddToCart = async (e) => {
         e.stopPropagation();
         if (!user) {
-            navigate('/login', { state: { returnUrl: window.location.pathname } });
+            setShowLoginModal(true);
             return;
         }
         try {
@@ -96,58 +95,14 @@ const DeviceCard = ({ device, deviceTypes, onDeviceUpdated, onDeviceDeleted, isA
             )}
 
             {showDetailsModal && (
-                <div className="device-details-overlay">
-                    <div className="device-details-modal">
-                        <div className="device-details-header">
-                            <h2>{device.name}</h2>
-                            <button className="close-button" onClick={() => setShowDetailsModal(false)}>×</button>
-                        </div>
-                        <div className="device-details-content">
-                            <div className="device-details-image">
-                                <img src={imageUrl} alt={device.name} />
-                            </div>
-                            <div className="device-details-info">
-                                <div className="info-group">
-                                    <p><strong>Тип устройства:</strong> {device.deviceType?.name}</p>
-                                    <p><strong>Потребление энергии:</strong> {device.powerConsumption} Вт</p>
-                                    <p><strong>Уровень шума:</strong> {device.noiseLevel} дБ</p>
-                                    <p><strong>Максимальный воздушный поток:</strong> {device.maxAirflow} м³/ч</p>
-                                    <p><strong>Цена:</strong> {device.price} ₽</p>
-                                </div>
-
-                                {/* Отображение дополнительных характеристик */}
-                                {device.characteristics && device.characteristics.filter(char => (char.possibleCharacteristic?.name || char.name)).length > 0 && (
-                                    <div className="characteristics-group">
-                                        <h4>Характеристики:</h4>
-                                        {device.characteristics
-                                            .filter(char => (char.possibleCharacteristic?.name || char.name))
-                                            .map(char => (
-                                                <p key={char.id}>
-                                                    <strong>{char.possibleCharacteristic?.name || char.name}{char.possibleCharacteristic?.unit ? ` (${char.possibleCharacteristic.unit})` : ''}:</strong> {char.value}
-                                                </p>
-                                            ))}
-                                    </div>
-                                )}
-
-                                <div className="description-group">
-                                    <h4>Описание:</h4>
-                                    <p>{device.description}</p>
-                                </div>
-                            </div>
-                        </div>
-                        <div className="device-details-footer">
-                            <button className="cancel-button" onClick={() => setShowDetailsModal(false)}>
-                                Закрыть
-                            </button>
-                            {!isAdmin && (
-                                <button className="add-to-cart-button-details" onClick={handleAddToCart}>
-                                    <FaShoppingCart className="me-2" style={{ fontSize: '1.2rem' }} />
-                                    Добавить в корзину
-                                </button>
-                            )}
-                        </div>
-                    </div>
-                </div>
+                <DeviceDetailsModal
+                    device={device}
+                    possibleCharacteristics={possibleCharacteristics}
+                    show={showDetailsModal}
+                    onClose={() => setShowDetailsModal(false)}
+                    onAddToCart={() => handleAddToCart({ stopPropagation: () => {} })}
+                    user={user}
+                />
             )}
         </>
     );

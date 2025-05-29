@@ -102,33 +102,31 @@ const PossibleCharacteristicsPage = () => {
     }
 
     return (
-        <div className="admin-page-container">
-            <h2>Управление возможными характеристиками</h2>
-
-            {/* Фильтр по типу устройства */}
-            <div className="filter-container form-group">
-                <label>Фильтр по типу устройства:</label>
-                <select value={filterDeviceTypeId} onChange={(e) => setFilterDeviceTypeId(e.target.value)}>
-                    <option value="">Все типы устройств</option>
-                    {deviceTypes.map(type => (
-                        <option key={type.id} value={type.id}>{type.name}</option>
-                    ))}
-                </select>
-            </div>
-
-            {/* Форма добавления/редактирования */}
-            <div className="form-container">
-                <h3>{editingCharacteristic ? 'Редактировать характеристику' : 'Добавить новую возможную характеристику'}</h3>
+        <div className="admin-page-container minimal-admin-flex">
+            <div className="admin-form-card">
+                <div className="admin-card-title">Возможные характеристики</div>
+                <div className="filter-block">
+                    <div className="filter-title">Фильтр по типу устройства</div>
+                    <div className="filter-container form-group">
+                        <label>Тип устройства:</label>
+                        <select value={filterDeviceTypeId} onChange={(e) => setFilterDeviceTypeId(e.target.value)}>
+                            <option value="">Все типы</option>
+                            {deviceTypes.map(type => (
+                                <option key={type.id} value={type.id}>{type.name}</option>
+                            ))}
+                        </select>
+                    </div>
+                </div>
                 <form onSubmit={editingCharacteristic ? handleUpdate : handleCreate}>
                     <div className="form-group">
                         <label>Тип устройства:</label>
-                         <select
+                        <select
                             name="deviceTypeId"
                             value={editingCharacteristic ? editingCharacteristic.deviceTypeId : newCharacteristic.deviceTypeId}
                             onChange={handleInputChange}
                             required
                         >
-                            <option value="">Выберите тип устройства</option>
+                            <option value="">Выберите тип</option>
                             {deviceTypes.map(type => (
                                 <option key={type.id} value={type.id}>{type.name}</option>
                             ))}
@@ -144,8 +142,8 @@ const PossibleCharacteristicsPage = () => {
                             required
                         />
                     </div>
-                     <div className="form-group">
-                        <label>Единица измерения (опционально):</label>
+                    <div className="form-group">
+                        <label>Ед. изм.:</label>
                         <input
                             type="text"
                             name="unit"
@@ -154,7 +152,7 @@ const PossibleCharacteristicsPage = () => {
                         />
                     </div>
                     <div className="form-group">
-                        <label>Тип значения:</label>
+                        <label>Тип:</label>
                         <select
                             name="type"
                             value={editingCharacteristic ? editingCharacteristic.type : newCharacteristic.type || 'string'}
@@ -163,28 +161,25 @@ const PossibleCharacteristicsPage = () => {
                         >
                             <option value="string">Строка</option>
                             <option value="number">Число</option>
-                            <option value="bool">Да/Нет (булево)</option>
+                            <option value="bool">Да/Нет</option>
                         </select>
                     </div>
                     <div className="form-buttons">
-                        <button type="submit" className="form-button green-button">{editingCharacteristic ? 'Сохранить изменения' : 'Добавить'}</button>
+                        <button type="submit" className="form-button green-button">{editingCharacteristic ? 'Сохранить' : 'Добавить'}</button>
                         {editingCharacteristic && (
                             <button type="button" className="form-button cancel-button" onClick={() => setEditingCharacteristic(null)}>Отмена</button>
                         )}
                     </div>
                 </form>
             </div>
-
-            {/* Список возможных характеристик */}
-            <div className="list-container">
-                <h3>Существующие возможные характеристики</h3>
+            <div className="admin-list-card">
                 <ul>
                     {possibleCharacteristics.map(char => (
                         <li key={char.id} className="list-item">
                             <span>{char.name} ({char.deviceType?.name}){char.unit ? ` (${char.unit})` : ''}</span>
                             <div className="item-buttons">
-                                <button onClick={() => setEditingCharacteristic(char)} className="form-button blue-button">Редактировать</button>
-                                <button onClick={() => handleDelete(char.id)} className="form-button cancel-button">Удалить</button>
+                                <button onClick={() => setEditingCharacteristic(char)} className="form-button blue-button">✎</button>
+                                <button onClick={() => handleDelete(char.id)} className="form-button cancel-button">🗑</button>
                             </div>
                         </li>
                     ))}

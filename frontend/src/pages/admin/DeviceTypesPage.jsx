@@ -81,12 +81,9 @@ const DeviceTypesPage = () => {
     }
 
     return (
-        <div className="admin-page-container">
-            <h2>Управление типами устройств</h2>
-
-            {/* Форма добавления/редактирования */}
-            <div className="form-container">
-                <h3>{editingDeviceType ? 'Редактировать тип устройства' : 'Добавить новый тип устройства'}</h3>
+        <div className="admin-page-container minimal-admin-flex">
+            <div className="admin-form-card">
+                <div className="admin-card-title">Типы устройств</div>
                 <form onSubmit={editingDeviceType ? handleUpdate : handleCreate}>
                     <div className="form-group">
                         <label>Название:</label>
@@ -107,24 +104,22 @@ const DeviceTypesPage = () => {
                         />
                     </div>
                     <div className="form-buttons">
-                        <button type="submit" className="form-button green-button">{editingDeviceType ? 'Сохранить изменения' : 'Добавить'}</button>
+                        <button type="submit" className="form-button green-button">{editingDeviceType ? 'Сохранить' : 'Добавить'}</button>
                         {editingDeviceType && (
                             <button type="button" className="form-button cancel-button" onClick={() => setEditingDeviceType(null)}>Отмена</button>
                         )}
                     </div>
                 </form>
             </div>
-
-            {/* Список типов устройств */}
-            <div className="list-container">
-                <h3>Существующие типы устройств</h3>
+            <div className="admin-list-card">
+                <div className="admin-card-title">Список типов устройств</div>
                 <ul>
                     {deviceTypes.map(type => (
                         <li key={type.id} className="list-item">
                             <span>{type.name}</span>
                             <div className="item-buttons">
-                                <button onClick={() => setEditingDeviceType(type)} className="form-button blue-button">Редактировать</button>
-                                <button onClick={() => handleDelete(type.id)} className="form-button cancel-button">Удалить</button>
+                                <button onClick={() => setEditingDeviceType(type)} className="form-button blue-button">✎</button>
+                                <button onClick={() => handleDelete(type.id)} className="form-button cancel-button">🗑</button>
                             </div>
                         </li>
                     ))}

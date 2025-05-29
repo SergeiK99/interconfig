@@ -5,19 +5,7 @@ import { fetchPossibleCharacteristicsByDeviceTypeId } from '../services/DeviceTy
 import { fetchRoomTypes } from '../services/RoomTypes';
 import { fetchBestDevice } from '../services/Devices';
 import DeviceResultCard from './DeviceResultCard';
-
-const getImageUrl = (imagePath) => {
-  if (!imagePath) return null;
-  if (imagePath.startsWith('http')) return imagePath;
-  return `http://localhost:5115${imagePath}`;
-};
-
-const addToCart = (device) => {
-  const cart = JSON.parse(localStorage.getItem('cart') || '[]');
-  cart.push(device);
-  localStorage.setItem('cart', JSON.stringify(cart));
-  alert('Товар добавлен в корзину!');
-};
+import LoginForm from './LoginForm';
 
 const Configurator = () => {
   const [deviceTypes, setDeviceTypes] = useState([]);
@@ -31,6 +19,7 @@ const Configurator = () => {
   const [result, setResult] = useState(null); // { device, mismatches }
   const [reason, setReason] = useState('');
   const [loading, setLoading] = useState(false);
+  const [showLoginModal, setShowLoginModal] = useState(false);
 
   useEffect(() => {
     const loadInitialData = async () => {
@@ -130,9 +119,16 @@ const Configurator = () => {
         ) : reason ? (
           <p className="error-text">{reason}</p>
         ) : result && result.device ? (
-          <DeviceResultCard device={result.device} />
+          <DeviceResultCard device={result.device} possibleCharacteristics={possibleCharacteristics} setShowLoginModal={setShowLoginModal} />
         ) : (
           <p className="result-text">Результат будет отображен здесь</p>
+        )}
+        {showLoginModal && (
+          <div className="modal-overlay">
+            <div className="modal-content">
+              <LoginForm onClose={() => setShowLoginModal(false)} onSwitchToRegister={() => {}} />
+            </div>
+          </div>
         )}
       </div>
       <form onSubmit={handleCalculate} className="configurator-form narrow compact-form">
@@ -165,6 +161,7 @@ const Configurator = () => {
                       type="checkbox"
                       checked={!!deviceCharacteristics[pc.id]}
                       onChange={e => handleCharacteristicChange(pc.id, e.target.checked)}
+                      style={{marginLeft:'0.5em'}}
                     />
                     <span className="checkmark"></span>
                   </label>

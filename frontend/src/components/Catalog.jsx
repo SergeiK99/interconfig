@@ -4,8 +4,9 @@ import CreateDeviceForm from './CreateDeviceForm';
 import DeviceCard from './DeviceCard';
 import LoadingSpinner from './LoadingSpinner';
 import { fetchDevices } from '../services/Devices';
-import { fetchDeviceTypes } from '../services/DeviceTypes';
+import { fetchDeviceTypes, fetchPossibleCharacteristicsByDeviceTypeId } from '../services/DeviceTypes';
 import { useAuth } from '../context/AuthContext';
+import LoginForm from './LoginForm';
 
 const Catalog = () => {
     const [devices, setDevices] = useState([]);
@@ -15,6 +16,10 @@ const Catalog = () => {
     const [deviceTypes, setDeviceTypes] = useState([]);
     const { user } = useAuth();
     const isAdmin = user && user.role === 'Admin';
+    const [search, setSearch] = useState("");
+    const [selectedType, setSelectedType] = useState("");
+    const [showLoginModal, setShowLoginModal] = useState(false);
+    const [possibleCharacteristicsByType, setPossibleCharacteristicsByType] = useState({});
 
     useEffect(() => {
         const fetchData = async () => {
@@ -40,6 +45,17 @@ const Catalog = () => {
         fetchData();
     }, []);
 
+    useEffect(() => {
+        const fetchAllPossibleCharacteristics = async () => {
+            const map = {};
+            for (const type of deviceTypes) {
+                map[type.id] = await fetchPossibleCharacteristicsByDeviceTypeId(type.id);
+            }
+            setPossibleCharacteristicsByType(map);
+        };
+        if (deviceTypes.length > 0) fetchAllPossibleCharacteristics();
+    }, [deviceTypes]);
+
     const handleDeviceCreated = (newDevice) => {
         setDevices([...devices, newDevice]);
         setShowCreateForm(false);
@@ -54,6 +70,10 @@ const Catalog = () => {
     const handleDeviceDeleted = (deviceId) => {
         setDevices(devices.filter(device => device.id !== deviceId));
     };
+
+    const filteredDevices = devices
+        .filter(d => !selectedType || d.deviceTypeId === Number(selectedType))
+        .filter(d => d.name.toLowerCase().includes(search.toLowerCase()));
 
     if (loading) {
         return <LoadingSpinner message="Загрузка каталога устройств..." />;
@@ -88,6 +108,13 @@ const Catalog = () => {
                     </button>
                 )}
             </div>
+            <div className="catalog-filters">
+                <select value={selectedType} onChange={e=>setSelectedType(e.target.value)} className="catalog-filter-select">
+                    <option value="">Все типы</option>
+                    {deviceTypes.map(dt=>(<option key={dt.id} value={dt.id}>{dt.name}</option>))}
+                </select>
+                <input type="text" placeholder="Поиск по названию..." value={search} onChange={e=>setSearch(e.target.value)} className="catalog-filter-search" />
+            </div>
 
             {showCreateForm && (
                 <CreateDeviceForm 
@@ -98,7 +125,7 @@ const Catalog = () => {
             )}
 
             <div className="devices-grid">
-                {devices.map((device) => (
+                {filteredDevices.map((device) => (
                     <DeviceCard 
                         key={device.id} 
                         device={device}
@@ -106,9 +133,22 @@ const Catalog = () => {
                         onDeviceUpdated={handleDeviceUpdated}
                         onDeviceDeleted={handleDeviceDeleted}
                         isAdmin={isAdmin}
+                        setShowLoginModal={setShowLoginModal}
+                        possibleCharacteristics={possibleCharacteristicsByType[device.deviceTypeId] || []}
                     />
                 ))}
             </div>
+
+            {showLoginModal && (
+                <div className="modal-overlay">
+                    <div className="modal-content">
+                        <LoginForm 
+                            onClose={() => setShowLoginModal(false)}
+                            onSwitchToRegister={() => {}}
+                        />
+                    </div>
+                </div>
+            )}
         </div>
     );
 };

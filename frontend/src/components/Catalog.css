@@ -195,3 +195,29 @@
     font-size: 16px;
     transition: all 0.3s ease;
 }
+
+.catalog-filters {
+    display: flex;
+    align-items: center;
+    gap: 1.2em;
+    margin-bottom: 1.5em;
+}
+
+.catalog-filter-select, .catalog-filter-search {
+    padding: 0.55em 1em;
+    border-radius: 7px;
+    border: 1px solid #e0e6ef;
+    font-size: 1em;
+    background: #f8fafd;
+    transition: border 0.2s, box-shadow 0.2s;
+    outline: none;
+    height: 42px;
+    min-width: 200px;
+    box-sizing: border-box;
+}
+
+.catalog-filter-select:focus, .catalog-filter-search:focus {
+    border: 1.5px solid #2196F3;
+    background: #fff;
+    box-shadow: 0 2px 8px rgba(33,150,243,0.07);
+}

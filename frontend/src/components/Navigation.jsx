@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useLocation } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { useCart } from '../context/CartContext';
 import LoginForm from './LoginForm';
@@ -11,6 +11,7 @@ const Navigation = () => {
   const { cart } = useCart();
   const [showLoginModal, setShowLoginModal] = useState(false);
   const [showRegisterModal, setShowRegisterModal] = useState(false);
+  const location = useLocation();
 
   const cartItemCount = cart?.items?.reduce((total, item) => total + item.quantity, 0) || 0;
 
@@ -27,10 +28,13 @@ const Navigation = () => {
   return (
     <header className="app-header">
       <nav className="navbar">
+        <Link to="/" style={{display:'flex',alignItems:'center'}}>
+          <img src="/icon.png" alt="ТИОН" style={{height:32, marginRight:16, cursor:'pointer'}} />
+        </Link>
         <ul className="nav-links">
-          <li><Link to="/">Конфигуратор</Link></li>
-          <li><Link to="/ai-consultant">ИИ-консультант</Link></li>
-          <li><Link to="/catalog">Каталог устройств</Link></li>
+          <li><Link to="/" className={location.pathname === '/' ? 'active' : ''}>Конфигуратор</Link></li>
+          <li><Link to="/ai-consultant" className={location.pathname === '/ai-consultant' ? 'active' : ''}>ИИ-консультант</Link></li>
+          <li><Link to="/catalog" className={location.pathname.startsWith('/catalog') ? 'active' : ''}>Каталог устройств</Link></li>
         </ul>
         
         {/* Меню справочников для админа */}

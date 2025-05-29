@@ -226,7 +226,7 @@ namespace backend.Controllers
                 if (result.Device != null)
                 {
                     var deviceDto = _mappingService.MapToDetailsDto(result.Device);
-                    return Ok(new { device = deviceDto });
+                    return Ok(new { device = deviceDto, mismatches = result.Mismatches });
                 }
                 return NotFound(new { reason = result.Reason });
             }

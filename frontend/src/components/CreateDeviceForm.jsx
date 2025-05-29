@@ -240,14 +240,14 @@ const CreateDeviceForm = ({ deviceTypes, onClose, onDeviceCreated }) => {
                             {possibleCharacteristics.map(pc => (
                                 <div className="form-group" key={pc.id}>
                                     {pc.type === 'bool' ? (
-                                        <label className="custom-checkbox">
+                                        <label className="custom-checkbox checkbox-right">
+                                            <span className="checkbox-label">{pc.name}{pc.unit ? ` (${pc.unit})` : ''}</span>
                                             <input
                                                 type="checkbox"
                                                 checked={!!deviceCharacteristics[pc.id]}
                                                 onChange={e => handleCharacteristicChange(pc.id, e.target.checked)}
                                             />
                                             <span className="checkmark"></span>
-                                            <span className="checkbox-label">{pc.name}{pc.unit ? ` (${pc.unit})` : ''}</span>
                                         </label>
                                     ) : (
                                         <>

@@ -81,12 +81,9 @@ const RoomTypesPage = () => {
     }
 
     return (
-        <div className="admin-page-container">
-            <h2>Управление типами помещений</h2>
-
-            {/* Форма добавления/редактирования */}
-            <div className="form-container">
-                <h3>{editingRoomType ? 'Редактировать тип помещения' : 'Добавить новый тип помещения'}</h3>
+        <div className="admin-page-container minimal-admin-flex">
+            <div className="admin-form-card">
+                <div className="admin-card-title">Типы помещений</div>
                 <form onSubmit={editingRoomType ? handleUpdate : handleCreate}>
                     <div className="form-group">
                         <label>Название:</label>
@@ -121,24 +118,22 @@ const RoomTypesPage = () => {
                         />
                     </div>
                     <div className="form-buttons">
-                        <button type="submit" className="form-button green-button">{editingRoomType ? 'Сохранить изменения' : 'Добавить'}</button>
+                        <button type="submit" className="form-button green-button">{editingRoomType ? 'Сохранить' : 'Добавить'}</button>
                         {editingRoomType && (
                             <button type="button" className="form-button cancel-button" onClick={() => setEditingRoomType(null)}>Отмена</button>
                         )}
                     </div>
                 </form>
             </div>
-
-            {/* Список типов помещений */}
-            <div className="list-container">
-                <h3>Существующие типы помещений</h3>
+            <div className="admin-list-card">
+                <div className="admin-card-title">Список типов помещений</div>
                 <ul>
                     {roomTypes.map(type => (
                         <li key={type.id} className="list-item">
                             <span>{type.name} (Площадь: {type.areaCoefficient}, Человек: {type.peopleCoefficient})</span>
                             <div className="item-buttons">
-                                <button onClick={() => setEditingRoomType(type)} className="form-button blue-button">Редактировать</button>
-                                <button onClick={() => handleDelete(type.id)} className="form-button cancel-button">Удалить</button>
+                                <button onClick={() => setEditingRoomType(type)} className="form-button blue-button">✎</button>
+                                <button onClick={() => handleDelete(type.id)} className="form-button cancel-button">🗑</button>
                             </div>
                         </li>
                     ))}
