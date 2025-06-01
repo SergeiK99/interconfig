@@ -77,20 +77,20 @@ namespace backend.Services
                 }
 
                 // Формируем информацию об устройствах для ИИ
-                var devicesInfo = string.Join("\n", devicesList.Select(d =>
+                var devicesInfo = string.Join("\n\n", devicesList.Select(d =>
                 {
                     var characteristicsInfo = d.Characteristics != null && d.Characteristics.Any()
-                        ? ", Характеристики: " + string.Join(", ", d.Characteristics.Select(c => $"{c.PossibleCharacteristic.Name}: {c.Value} {c.PossibleCharacteristic.Unit}"))
+                        ? "\nДоп. характеристики:\n" + string.Join("\n", d.Characteristics.Select(c => $"- {c.PossibleCharacteristic.Name}: {c.Value} {c.PossibleCharacteristic.Unit}"))
                         : "";
 
-                    return $"Устройство: {d.Name}, " +
-                           $"Тип устройства: {d.DeviceType}" +
-                           $"Описание: {d.Description}, " +
-                           $"Макс. расход воздуха: {d.MaxAirflow} м³/ч, " +
-                           $"Потребляемая мощность: {d.PowerConsumption} Вт, " +
-                           $"Уровень шума: {d.NoiseLevel} дБ, " +
-                           $"Цена: {d.Price} руб." +
-                           characteristicsInfo;
+                    return $"=== Устройство ===\n" +
+                           $"Тип устройства: {d.DeviceType.Name}\n" +
+                           $"Название: {d.Name}\n" +
+                           $"Описание: {d.Description}\n" +
+                           $"Макс. расход воздуха: {d.MaxAirflow} м³/ч\n" +
+                           $"Потребляемая мощность: {d.PowerConsumption} Вт\n" +
+                           $"Уровень шума: {d.NoiseLevel} дБ\n" +
+                           $"Цена: {d.Price} руб." + characteristicsInfo;
                 }));
 
                 var accessToken = await GetAccessTokenAsync();
@@ -102,11 +102,8 @@ namespace backend.Services
                 messages.Add(new
                 {
                     role = "system",
-                    content = "Ты - консультант по подбору устройств вентиляции компании Tion. " +
-                            "Вот список доступных устройств:\n" + devicesInfo + "\n\n" +
-                            "Твоя задача - помочь пользователю выбрать подходящее устройство на основе его запроса. " +
-                            "Используй информацию из списка устройств для рекомендации. " +
-                            "Если пользователь ссылается на предыдущие рекомендации, учитывай контекст разговора."
+                    content = "Ты - консультант компании Tion. Твоя ЕДИНСТВЕННАЯ задача - помочь пользователю выбрать устройство ТОЛЬКО из предоставленного НИЖЕ списка. ТЫ НЕ ДОЛЖЕН ИСПОЛЬЗОВАТЬ НИКАКУЮ ИНФОРМАЦИЮ ИЗ ВНЕШНИХ ИСТОЧНИКОВ ИЛИ СВОИХ ВНУТРЕННИХ ЗНАНИЙ. ИСПОЛЬЗУЙ ИСКЛЮЧИТЕЛЬНО СПИСОК УСТРОЙСТВ. Если ты не можешь найти подходящее устройство в предоставленном СПИСКЕ, ЧЕТКО СООБЩИ ОБ ЭТОМ ПОЛЬЗОВАТЕЛЮ и скажи, что можешь помочь только с устройствами из списка. При подборе, уделяй особое внимание ТИПУ устройства и ЧИСЛОВЫМ значениям (цена, расход воздуха и т.д.). Вот список доступных устройств:\n" + devicesInfo + "\n\n" +
+                            "Если пользователь ссылается на предыдущие рекомендации, учитывай ТОЛЬКО предыдущие рекомендации, основанные на предоставленном списке устройств."
                 });
 
                 // Добавляем историю чата (если есть)
