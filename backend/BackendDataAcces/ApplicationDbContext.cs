@@ -32,31 +32,9 @@ namespace BackendDataAccess
             modelBuilder.ApplyConfiguration(new DeviceConfiguration());
             modelBuilder.ApplyConfiguration(new RoomTypeConfiguration());
             modelBuilder.ApplyConfiguration(new DeviceTypeConfiguration());
-
-            // Конфигурация для User
-            modelBuilder.Entity<User>()
-                .HasIndex(u => u.Email)
-                .IsUnique();
-
-            // Конфигурация для PossibleCharacteristic
-            modelBuilder.Entity<PossibleCharacteristic>()
-                .HasOne(pc => pc.DeviceType)
-                .WithMany(dt => dt.PossibleCharacteristics)
-                .HasForeignKey(pc => pc.DeviceTypeId)
-                .OnDelete(DeleteBehavior.Cascade);
-
-            // Конфигурация для Characteristic
-            modelBuilder.Entity<Characteristic>()
-                .HasOne(c => c.Device)
-                .WithMany(d => d.Characteristics)
-                .HasForeignKey(c => c.DeviceId)
-                .OnDelete(DeleteBehavior.Cascade);
-
-            modelBuilder.Entity<Characteristic>()
-                .HasOne(c => c.PossibleCharacteristic)
-                .WithMany(pc => pc.Characteristics)
-                .HasForeignKey(c => c.PossibleCharacteristicId)
-                .OnDelete(DeleteBehavior.Restrict);
+            modelBuilder.ApplyConfiguration(new UserConfiguration());
+            modelBuilder.ApplyConfiguration(new PossibleCharacteristicConfiguration());
+            modelBuilder.ApplyConfiguration(new CharacteristicConfiguration());
 
             base.OnModelCreating(modelBuilder);
         }
