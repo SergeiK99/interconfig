@@ -28,8 +28,8 @@ const Configurator = () => {
           fetchDeviceTypes(),
           fetchRoomTypes()
         ]);
-        setDeviceTypes(types);
-        setRoomTypes(rooms);
+        setDeviceTypes(types.$values || []);
+        setRoomTypes(rooms.$values || []);
       } catch (error) {
         setReason('Ошибка при загрузке данных');
       }
@@ -143,7 +143,7 @@ const Configurator = () => {
             className="input-field select-field narrow"
           >
             <option value="">Выберите тип устройства</option>
-            {deviceTypes.map((type) => (
+            {(deviceTypes.$values || []).map((type) => (
               <option key={type.id} value={type.id}>{type.name}</option>
             ))}
           </select>
@@ -192,7 +192,7 @@ const Configurator = () => {
             className="input-field select-field narrow"
           >
             <option value="">Выберите тип помещения</option>
-            {roomTypes.map((type) => (
+            {(roomTypes.$values || []).map((type) => (
               <option key={type.id} value={type.id}>{type.name}</option>
             ))}
           </select>

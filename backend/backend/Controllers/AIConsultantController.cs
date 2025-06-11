@@ -4,6 +4,7 @@ using backend.Models;
 using System.Threading.Tasks;
 using System;
 using System.Collections.Generic;
+using BackendModels;
 
 namespace backend.Controllers
 {
@@ -28,13 +29,12 @@ namespace backend.Controllers
 
             try
             {
-                // Исправляем проблему с оператором ??
-                var recommendation = await _gigaChatService.GetDeviceRecommendation(
+                var (recommendation, recommendedDevice) = await _gigaChatService.GetDeviceRecommendation(
                     request.Query,
                     request.History ?? new List<ChatMessage>()
                 );
 
-                return Ok(new { recommendation });
+                return Ok(new { recommendation, device = (BackendModels.Device)recommendedDevice });
             }
             catch (Exception ex)
             {

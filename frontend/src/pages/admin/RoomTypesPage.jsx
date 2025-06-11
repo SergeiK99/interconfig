@@ -17,7 +17,7 @@ const RoomTypesPage = () => {
         try {
             setLoading(true);
             const data = await fetchRoomTypes();
-            setRoomTypes(data);
+            setRoomTypes(data.$values || []);
         } catch (err) {
             setError('Ошибка загрузки типов помещений');
             console.error('Error loading room types:', err);
@@ -30,7 +30,7 @@ const RoomTypesPage = () => {
         e.preventDefault();
         try {
             const createdType = await createRoomType(newRoomType);
-            setRoomTypes([...roomTypes, createdType]);
+            setRoomTypes(prevRoomTypes => [...prevRoomTypes, createdType]);
             setNewRoomType({ name: '', areaCoefficient: '', peopleCoefficient: '' });
         } catch (err) {
             setError('Ошибка создания типа помещения');
@@ -43,7 +43,7 @@ const RoomTypesPage = () => {
         if (!editingRoomType) return;
         try {
             await updateRoomType(editingRoomType.id, editingRoomType);
-            setRoomTypes(roomTypes.map(type => type.id === editingRoomType.id ? editingRoomType : type));
+            setRoomTypes(prevRoomTypes => prevRoomTypes.map(type => type.id === editingRoomType.id ? editingRoomType : type));
             setEditingRoomType(null);
         } catch (err) {
             setError('Ошибка обновления типа помещения');
@@ -55,7 +55,7 @@ const RoomTypesPage = () => {
         if (window.confirm('Вы уверены, что хотите удалить этот тип помещения?')) {
             try {
                 await deleteRoomType(id);
-                setRoomTypes(roomTypes.filter(type => type.id !== id));
+                setRoomTypes(prevRoomTypes => prevRoomTypes.filter(type => type.id !== id));
             } catch (err) {
                 setError('Ошибка удаления типа помещения');
                 console.error('Error deleting room type:', err);
@@ -128,7 +128,7 @@ const RoomTypesPage = () => {
             <div className="admin-list-card">
                 <div className="admin-card-title">Список типов помещений</div>
                 <ul>
-                    {roomTypes.map(type => (
+                    {(roomTypes.$values || roomTypes).map(type => (
                         <li key={type.id} className="list-item">
                             <span>{type.name} (Площадь: {type.areaCoefficient}, Человек: {type.peopleCoefficient})</span>
                             <div className="item-buttons">

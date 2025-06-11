@@ -28,6 +28,7 @@ export const CartProvider = ({ children }) => {
         try {
             setLoading(true);
             const data = await cartService.getCart();
+            console.log('Received cart data from backend:', data);
             setCart(data);
             setError(null);
         } catch (err) {

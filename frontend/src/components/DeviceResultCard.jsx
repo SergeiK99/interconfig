@@ -10,10 +10,12 @@ const getImageUrl = (imagePath) => {
   return `http://localhost:5115${imagePath}`;
 };
 
-const DeviceResultCard = ({ device, possibleCharacteristics = [], setShowLoginModal }) => {
+const DeviceResultCard = ({ device, possibleCharacteristics = [], setShowLoginModal, isCompact }) => {
   const [showDetails, setShowDetails] = useState(false);
   const { addToCart } = useCart();
   const { user } = useAuth();
+
+  console.log('Device object in DeviceResultCard:', device);
 
   const handleCardClick = (e) => {
     if (e.target.closest('.device-result-btn')) return;
@@ -36,7 +38,8 @@ const DeviceResultCard = ({ device, possibleCharacteristics = [], setShowLoginMo
       { label: 'Поток', value: device.maxAirflow + ' м³/ч' },
       { label: 'Цена', value: device.price + ' ₽' },
     ];
-    const additional = (device.characteristics || []).map(char => {
+    const additional = (device.characteristics?.$values || []).map(char => {
+      console.log('Processing characteristic:', char);
       const pc = possibleCharacteristics.find(pc => pc.id === char.possibleCharacteristicId);
       if (!pc) return null;
       if (pc.type === 'bool' && char.value !== 'true') return null;
@@ -60,7 +63,7 @@ const DeviceResultCard = ({ device, possibleCharacteristics = [], setShowLoginMo
 
   return (
     <>
-      <div className="device-result-card" onClick={handleCardClick}>
+      <div className={`device-result-card ${isCompact ? 'compact-ai-card' : ''}`} onClick={handleCardClick}>
         <div className="device-result-image-block">
           {getImageUrl(device.imagePath) && (
             <img

@@ -13,7 +13,7 @@ const Navigation = () => {
   const [showRegisterModal, setShowRegisterModal] = useState(false);
   const location = useLocation();
 
-  const cartItemCount = cart?.items?.reduce((total, item) => total + item.quantity, 0) || 0;
+  const cartItemCount = (cart?.items?.$values || []).reduce((total, item) => total + item.quantity, 0);
 
   const handleSwitchToRegister = () => {
     setShowLoginModal(false);

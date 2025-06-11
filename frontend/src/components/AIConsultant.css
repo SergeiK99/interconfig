@@ -1,125 +1,141 @@
 .ai-consultant {
     max-width: 800px;
-    margin: 2rem auto;
-    padding: 2rem;
-    background-color: #fff;
-    border-radius: 8px;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    margin: 0 auto;
+    padding: 20px;
 }
 
 .chat-history {
-    max-height: 500px;
+    margin-bottom: 20px;
+    max-height: 600px;
     overflow-y: auto;
-    border: 1px solid #e0e0e0;
+    padding: 20px;
+    background: #f8f9fa;
     border-radius: 8px;
-    padding: 1rem;
-    margin-bottom: 1.5rem;
-    background-color: #fafafa;
-}
-
-.empty-chat {
-    text-align: center;
-    color: #888;
-    font-style: italic;
-    margin: 2rem 0;
 }
 
 .message {
-    margin-bottom: 1.5rem;
-    padding: 1rem;
+    margin-bottom: 20px;
+    padding: 15px;
     border-radius: 8px;
-    word-wrap: break-word;
+    background: white;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.1);
 }
 
 .message.user {
-    background-color: #e3f2fd;
-    margin-left: 3rem;
-    border-left: 4px solid #2196f3;
+    background: #e3f2fd;
 }
 
 .message.assistant {
-    background-color: #f5f5f5;
-    margin-right: 3rem;
-    border-left: 4px solid #4caf50;
+    background: white;
 }
 
 .message-header {
-    margin-bottom: 0.5rem;
+    margin-bottom: 10px;
+    color: #666;
 }
 
-.message-header strong {
-    color: #333;
-    font-size: 0.9rem;
+.message-content {
+    line-height: 1.5;
 }
 
 .message-content p {
     margin: 0;
-    line-height: 1.6;
+    white-space: pre-wrap;
+}
+
+.empty-chat {
+    text-align: center;
+    color: #666;
+    font-style: italic;
 }
 
 .consultant-form {
     display: flex;
     flex-direction: column;
-    gap: 1rem;
+    gap: 15px;
 }
 
 .query-input {
     width: 100%;
-    padding: 1rem;
+    padding: 12px;
     border: 1px solid #ddd;
     border-radius: 8px;
-    font-size: 1rem;
     resize: vertical;
-    min-height: 100px;
-}
-
-.query-input:focus {
-    outline: none;
-    border-color: #2196f3;
-    box-shadow: 0 0 0 2px rgba(33, 150, 243, 0.2);
+    font-family: inherit;
+    font-size: 1rem;
 }
 
 .button-group {
     display: flex;
-    gap: 1rem;
-    justify-content: flex-start;
+    gap: 10px;
 }
 
 .submit-button, .clear-button {
-    padding: 0.75rem 1.5rem;
+    padding: 10px 20px;
     border: none;
     border-radius: 6px;
-    font-size: 1rem;
     cursor: pointer;
-    transition: all 0.2s;
+    font-weight: 500;
+    transition: background-color 0.2s;
 }
 
 .submit-button {
-    background-color: #2196f3;
+    background: #007bff;
     color: white;
+    flex: 1;
 }
 
-.submit-button:hover:not(:disabled) {
-    background-color: #1976d2;
+.submit-button:hover {
+    background: #0056b3;
 }
 
 .submit-button:disabled {
-    background-color: #ccc;
+    background: #ccc;
     cursor: not-allowed;
 }
 
 .clear-button {
-    background-color: #f44336;
+    background: #6c757d;
     color: white;
 }
 
-.clear-button:hover:not(:disabled) {
-    background-color: #d32f2f;
+.clear-button:hover {
+    background: #5a6268;
 }
 
 .clear-button:disabled {
-    background-color: #ccc;
+    background: #ccc;
     cursor: not-allowed;
+}
+
+.device-card-container {
+    margin-top: 20px;
+    padding: 15px;
+    background: #f8f9fa;
+    border-radius: 8px;
+    border: 1px solid #e9ecef;
+}
+
+/* Стили для модального окна */
+.modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(0, 0, 0, 0.5);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+}
+
+.modal-content {
+    background: white;
+    padding: 20px;
+    border-radius: 8px;
+    max-width: 400px;
+    width: 90%;
 }
 
 /* Скроллбар для истории чата */
@@ -139,4 +155,40 @@
 
 .chat-history::-webkit-scrollbar-thumb:hover {
     background: #555;
+}
+
+.compact-ai-card {
+    max-width: 320px;
+    padding: 1.2rem;
+    font-size: 0.9em;
+}
+
+.compact-ai-card .device-result-image {
+    width: 90px;
+    height: 90px;
+    margin-bottom: 0.8em;
+}
+
+.compact-ai-card .device-result-title {
+    font-size: 1.2em;
+    margin-bottom: 0.1em;
+}
+
+.compact-ai-card ul {
+    padding-left: 0.8em !important;
+}
+
+.compact-ai-card li {
+    padding: 0.1em 0 !important;
+}
+
+.compact-ai-card .device-result-actions {
+    flex-direction: column;
+    gap: 0.5em;
+    margin-top: 1em;
+}
+
+.compact-ai-card .device-result-btn {
+    padding: 0.6em 1em;
+    font-size: 0.9em;
 }

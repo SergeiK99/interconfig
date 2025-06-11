@@ -10,6 +10,7 @@ using BackendModels;
 using backend.Models;
 using System.Linq;
 using System.Collections.Generic;
+using System.Text.RegularExpressions;
 
 namespace backend.Services
 {
@@ -63,7 +64,7 @@ namespace backend.Services
             return _accessToken;
         }
 
-        public async Task<string> GetDeviceRecommendation(string userQuery, List<Models.ChatMessage> chatHistory = null)
+        public async Task<(string recommendation, Device recommendedDevice)> GetDeviceRecommendation(string userQuery, List<Models.ChatMessage> chatHistory = null)
         {
             try
             {
@@ -73,7 +74,7 @@ namespace backend.Services
 
                 if (!devicesList.Any())
                 {
-                    return "Извините, в базе данных нет доступных устройств.";
+                    return ("Извините, в базе данных нет доступных устройств.", null);
                 }
 
                 // Формируем информацию об устройствах для ИИ
@@ -83,8 +84,8 @@ namespace backend.Services
                         ? ", Характеристики: " + string.Join(", ", d.Characteristics.Select(c => $"{c.PossibleCharacteristic.Name}: {c.Value} {c.PossibleCharacteristic.Unit}"))
                         : "";
 
-                    return $"Устройство: {d.Name}, " +
-                           $"Тип устройства: {d.DeviceType}" +
+                    return $"ID: {d.Id}, " +
+                           $"Тип устройства: {d.DeviceType?.Name}, " +
                            $"Описание: {d.Description}, " +
                            $"Макс. расход воздуха: {d.MaxAirflow} м³/ч, " +
                            $"Потребляемая мощность: {d.PowerConsumption} Вт, " +
@@ -92,6 +93,8 @@ namespace backend.Services
                            $"Цена: {d.Price} руб." +
                            characteristicsInfo;
                 }));
+
+                Console.WriteLine($"Available Devices for AI:\n{devicesInfo}");
 
                 var accessToken = await GetAccessTokenAsync();
 
@@ -102,11 +105,7 @@ namespace backend.Services
                 messages.Add(new
                 {
                     role = "system",
-                    content = "Ты - консультант по подбору устройств вентиляции компании Tion. " +
-                            "Вот список доступных устройств:\n" + devicesInfo + "\n\n" +
-                            "Твоя задача - помочь пользователю выбрать подходящее устройство на основе его запроса. " +
-                            "Используй информацию из списка устройств для рекомендации. " +
-                            "Если пользователь ссылается на предыдущие рекомендации, учитывай контекст разговора."
+                    content = "Ты - консультант по подбору устройств вентиляции компании Tion. Твоя задача - помочь пользователю выбрать подходящее устройство на основе его запроса. Используй предоставленный список доступных устройств для рекомендации. Если пользователь ссылается на предыдущие рекомендации, учитывай контекст разговора. КРАЙНЕ ВАЖНО: Если ты рекомендуешь конкретное устройство, ОБЯЗАТЕЛЬНО укажи его ID в своем ответе в формате (ID: X), где X - числовой ID устройства из списка доступных устройств. Твой ответ должен быть максимально кратким и лаконичным, вмещаясь в 1-2 предложения. НИ В КОЕМ СЛУЧАЕ НЕ УПОМИНАЙ КАКИЕ-ЛИБО НАЗВАНИЯ УСТРОЙСТВ В ТЕКСТЕ РЕКОМЕНДАЦИИ! Просто предоставь краткую рекомендацию и ID. Если ты не рекомендуешь конкретное устройство, НЕ УКАЗЫВАЙ этот ID тег. Не нужно дублировать всю информацию об устройстве в тексте ответа. Фронтенд самостоятельно отобразит информацию об устройстве на основе предоставленного ID. Вот список доступных устройств:\n" + devicesInfo + "\n\n"
                 });
 
                 // Добавляем историю чата (если есть)
@@ -141,6 +140,8 @@ namespace backend.Services
                 var response = await _httpClient.SendAsync(request);
                 var responseContent = await response.Content.ReadAsStringAsync();
 
+                Console.WriteLine($"Raw GigaChat API Response: {responseContent}");
+
                 if (!response.IsSuccessStatusCode)
                 {
                     throw new HttpRequestException($"GigaChat API error: {response.StatusCode} - {responseContent}");
@@ -150,16 +151,33 @@ namespace backend.Services
 
                 if (responseObject?.Choices == null || responseObject.Choices.Length == 0)
                 {
-                    return "Извините, не удалось получить рекомендацию.";
+                    return ("Извините, не удалось получить рекомендацию.", null);
                 }
 
                 var recommendation = responseObject.Choices[0].Message?.Content;
                 if (string.IsNullOrEmpty(recommendation))
                 {
-                    return "Извините, не удалось получить рекомендацию.";
+                    return ("Извините, не удалось получить рекомендацию.", null);
                 }
 
-                return recommendation;
+                // Ищем упоминание устройства в ответе
+                Device recommendedDevice = null;
+                var deviceIdMatch = System.Text.RegularExpressions.Regex.Match(recommendation, @"ID: (\d+)");
+
+                if (deviceIdMatch.Success)
+                {
+                    if (int.TryParse(deviceIdMatch.Groups[1].Value, out int deviceId))
+                    {
+                        recommendedDevice = devicesList.FirstOrDefault(d => d.Id == deviceId);
+                    }
+                    // Удаляем блок "Рекомендуемое устройство" из рекомендации
+                    recommendation = System.Text.RegularExpressions.Regex.Replace(recommendation, @"\s*Рекомендуемое устройство:\s*ID: \d+\s*Устройство: .*?Характеристики: .*?(?=\n\n|\Z)", "", System.Text.RegularExpressions.RegexOptions.Singleline);
+                    // Если блок не найден, но ID был, удаляем только ID (если он остался в тексте отдельно)
+                    recommendation = System.Text.RegularExpressions.Regex.Replace(recommendation, @"\(ID: \d+\)\s*", "");
+                    recommendation = System.Text.RegularExpressions.Regex.Replace(recommendation, @"ID: \d+\s*", "");
+                }
+
+                return (recommendation, recommendedDevice);
             }
             catch (Exception ex)
             {

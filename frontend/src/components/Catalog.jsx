@@ -30,8 +30,8 @@ const Catalog = () => {
                 ]);
                 
                 if (devicesData && typesData) {
-                    setDevices(devicesData);
-                    setDeviceTypes(typesData);
+                    setDevices(devicesData.$values || []);
+                    setDeviceTypes(typesData.$values || []);
                 } else {
                     throw new Error('Ошибка загрузки данных');
                 }
@@ -62,16 +62,16 @@ const Catalog = () => {
     };
 
     const handleDeviceUpdated = (updatedDevice) => {
-        setDevices(devices.map(device => 
+        setDevices((prevDevices) => prevDevices.map(device => 
             device.id === updatedDevice.id ? updatedDevice : device
         ));
     };
 
     const handleDeviceDeleted = (deviceId) => {
-        setDevices(devices.filter(device => device.id !== deviceId));
+        setDevices((prevDevices) => prevDevices.filter(device => device.id !== deviceId));
     };
 
-    const filteredDevices = devices
+    const filteredDevices = (devices.$values || devices)
         .filter(d => !selectedType || d.deviceTypeId === Number(selectedType))
         .filter(d => d.name.toLowerCase().includes(search.toLowerCase()));
 
@@ -111,30 +111,30 @@ const Catalog = () => {
             <div className="catalog-filters">
                 <select value={selectedType} onChange={e=>setSelectedType(e.target.value)} className="catalog-filter-select">
                     <option value="">Все типы</option>
-                    {deviceTypes.map(dt=>(<option key={dt.id} value={dt.id}>{dt.name}</option>))}
+                    {(deviceTypes.$values || []).map(dt=>(<option key={dt.id} value={dt.id}>{dt.name}</option>))}
                 </select>
                 <input type="text" placeholder="Поиск по названию..." value={search} onChange={e=>setSearch(e.target.value)} className="catalog-filter-search" />
             </div>
 
             {showCreateForm && (
                 <CreateDeviceForm 
-                    deviceTypes={deviceTypes}
+                    deviceTypes={deviceTypes.$values || []}
                     onClose={() => setShowCreateForm(false)}
                     onDeviceCreated={handleDeviceCreated}
                 />
             )}
 
             <div className="devices-grid">
-                {filteredDevices.map((device) => (
+                {(filteredDevices.$values || filteredDevices).map((device) => (
                     <DeviceCard 
                         key={device.id} 
                         device={device}
-                        deviceTypes={deviceTypes}
+                        deviceTypes={deviceTypes.$values || []}
                         onDeviceUpdated={handleDeviceUpdated}
                         onDeviceDeleted={handleDeviceDeleted}
                         isAdmin={isAdmin}
                         setShowLoginModal={setShowLoginModal}
-                        possibleCharacteristics={possibleCharacteristicsByType[device.deviceTypeId] || []}
+                        possibleCharacteristics={possibleCharacteristicsByType[device.deviceTypeId]?.$values || []}
                     />
                 ))}
             </div>

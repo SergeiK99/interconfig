@@ -11,8 +11,8 @@ const DeviceDetailsModal = ({ device, possibleCharacteristics = [], show, onClos
   if (!show) return null;
 
   const renderCharacteristicsList = (chars, possibleCharacteristics = []) => {
-    if (!chars || chars.length === 0) return null;
-    const filtered = chars.map(char => {
+    if (!chars || (chars.$values || []).length === 0) return null;
+    const filtered = (chars.$values || []).map(char => {
       const pc = possibleCharacteristics.find(pc => pc.id === char.possibleCharacteristicId);
       const name = pc ? pc.name : (char.possibleCharacteristic?.name || char.name);
       const unit = pc ? pc.unit : (char.possibleCharacteristic?.unit || '');

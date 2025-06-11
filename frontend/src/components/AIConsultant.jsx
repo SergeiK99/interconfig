@@ -1,10 +1,33 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import './AIConsultant.css';
+import DeviceResultCard from './DeviceResultCard';
+import LoginForm from './LoginForm';
+import { fetchDeviceTypes, fetchPossibleCharacteristicsByDeviceTypeId } from '../services/DeviceTypes';
 
 const AIConsultant = () => {
     const [query, setQuery] = useState('');
     const [messages, setMessages] = useState([]);
     const [isLoading, setIsLoading] = useState(false);
+    const [showLoginModal, setShowLoginModal] = useState(false);
+    const [allPossibleCharacteristics, setAllPossibleCharacteristics] = useState({});
+
+    useEffect(() => {
+        const loadCharacteristicsData = async () => {
+            try {
+                const deviceTypes = await fetchDeviceTypes();
+                const characteristicsMap = {};
+                for (const type of deviceTypes) {
+                    const characteristics = await fetchPossibleCharacteristicsByDeviceTypeId(type.id);
+                    characteristicsMap[type.id] = characteristics;
+                }
+                setAllPossibleCharacteristics(characteristicsMap);
+            } catch (error) {
+                console.error('Error loading characteristics data:', error);
+            }
+        };
+
+        loadCharacteristicsData();
+    }, []);
 
     const handleSubmit = async (e) => {
         e.preventDefault();
@@ -35,7 +58,12 @@ const AIConsultant = () => {
             const data = await response.json();
             
             // Добавляем ответ ассистента в историю
-            setMessages([...newMessages, { role: 'assistant', content: data.recommendation }]);
+            setMessages([...newMessages, { 
+                role: 'assistant', 
+                content: data.recommendation,
+                device: data.device // Сохраняем информацию об устройстве
+            }]);
+            console.log('Received device data:', data.device);
             setQuery(''); // Очищаем поле ввода
         } catch (error) {
             console.error('Error:', error);
@@ -68,6 +96,17 @@ const AIConsultant = () => {
                             </div>
                             <div className="message-content">
                                 <p>{message.content}</p>
+                                {message.role === 'assistant' && message.device && (
+                                    <div className="device-card-container">
+                                        {console.log('Rendering DeviceResultCard with device:', message.device, 'and characteristics:', allPossibleCharacteristics[message.device.deviceTypeId])}
+                                        <DeviceResultCard 
+                                            device={message.device} 
+                                            possibleCharacteristics={allPossibleCharacteristics[message.device.deviceTypeId]}
+                                            setShowLoginModal={setShowLoginModal}
+                                            isCompact={true}
+                                        />
+                                    </div>
+                                )}
                             </div>
                         </div>
                     ))
@@ -96,6 +135,14 @@ const AIConsultant = () => {
                     </button>
                 </div>
             </form>
+
+            {showLoginModal && (
+                <div className="modal-overlay">
+                    <div className="modal-content">
+                        <LoginForm onClose={() => setShowLoginModal(false)} onSwitchToRegister={() => {}} />
+                    </div>
+                </div>
+            )}
         </div>
     );
 };
